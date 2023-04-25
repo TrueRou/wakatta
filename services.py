@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from starlette import status
 
 import config
-from app.models import Base, User
+from app.models import Base
 
 engine = create_async_engine(config.mysql_url, echo=config.debug, future=True)
 async_session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
