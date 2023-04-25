@@ -37,7 +37,7 @@ class Client(ModelBase):
 class Schedule(ModelBase):
     id: int
     label: str
-    schedule_classes: List[Class]
+    classes: List[Class]
 
 
 class UserRead(schemas.BaseUser[uuid.UUID]):

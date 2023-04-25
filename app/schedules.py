@@ -49,3 +49,5 @@ async def apply_schedule(schedule_id: int, client_id: int):
         for clazz in schedule.classes:
             new_clazz = models.Class(label=clazz.label, time_hour=clazz.time_hour, time_minute=clazz.time_minute, client_id=client.id)
             session.add(new_clazz)
+        await session.refresh(client)
+        return client
