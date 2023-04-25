@@ -26,7 +26,7 @@ async def put_client(hardware_id: str, identifier: str):
         return client
 
 
-@client_router.post('/class', response_model=List[schemas.Class])
+@client_router.get('/class', response_model=List[schemas.Class])
 async def get_classes(client_id: int):
     async with db_session() as session:
         client = await services.get_model(session, client_id, models.Client)
