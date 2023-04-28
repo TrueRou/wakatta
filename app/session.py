@@ -1,6 +1,13 @@
+import asyncio
 import queue
 from datetime import timedelta, datetime
 from typing import List
+
+import sqlalchemy
+from sqlalchemy import null
+
+import services
+from app import schedules, models
 
 online_clients = []
 message_queue = queue.Queue()
@@ -34,3 +41,13 @@ def dequeue_messages():
         message = message_queue.get()
         for client_id in online_clients:
             enqueue_message_client(message, client_id)
+
+
+async def update_subscription():
+    async with services.db_session() as session:
+        clients = await services.select_models(session, models.Client, models.Client.subscribe_schedule_id != null(), )
+        for client in clients:
+            client_id = client.id
+            await schedules.apply_schedule(client.subscribe_schedule_id, client_id)
+            if client_id in online_clients:
+                client_need_refresh[client_id] = True

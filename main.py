@@ -19,5 +19,8 @@ app.include_router(fastapi_users.get_register_router(UserRead, UserCreate), pref
 @app.on_event("startup")
 async def on_startup():
     await services.create_db_and_tables()
+    await session.update_subscription()  # Apply subscription when startup to ensure lessons of current weekday
     scheduler.add_job(session.check_online_clients, 'interval', seconds=5)
     scheduler.add_job(session.dequeue_messages, 'interval', seconds=1)
+    scheduler.add_job(session.update_subscription, 'cron', hour=0)  # Apply subscription every single day
+    scheduler.start()
