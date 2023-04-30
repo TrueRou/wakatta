@@ -26,6 +26,7 @@ class Class(Base):
     label = Column(String(length=32), nullable=False)
     time_hour = Column(Integer)
     time_minute = Column(Integer)
+    time_duration = Column(Integer, default=40)
     client_id = Column(Integer, ForeignKey('client.id'), index=True)
 
 
@@ -42,5 +43,6 @@ class ScheduleClass(Base):
     label = Column(String(length=32), nullable=False)
     time_hour = Column(Integer)
     time_minute = Column(Integer)
+    time_duration = Column(Integer, default=40)
     weekday = Column(Integer)
     schedule_id = Column(Integer, ForeignKey('schedule.id'), index=True)

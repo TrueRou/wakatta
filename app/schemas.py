@@ -18,6 +18,7 @@ class ClassBase(ModelBase):
     label: str
     time_hour: int
     time_minute: int
+    time_duration: int
 
 
 class Class(ClassBase):

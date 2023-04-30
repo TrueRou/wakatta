@@ -28,10 +28,10 @@ async def create_schedule(label: str):
 
 
 @schedule_router.post('/class', response_model=schemas.Class)
-async def create_schedule_class(schedule_id: int, label: str, time_hour: int, time_minute: int):
+async def create_schedule_class(schedule_id: int, label: str, time_hour: int, time_minute: int, time_duration: int = 40):
     async with db_session() as session:
         await services.get_model(session, schedule_id, models.Schedule)
-        clazz = models.ScheduleClass(label=label, time_hour=time_hour, time_minute=time_minute, schedule_id=schedule_id)
+        clazz = models.ScheduleClass(label=label, time_hour=time_hour, time_minute=time_minute, schedule_id=schedule_id, time_duration=time_duration)
         await services.add_model(session, clazz)
         await _broadcast_schedule(schedule_id)
         return clazz
@@ -65,7 +65,7 @@ async def apply_schedule(schedule_id: int, client_id: int):
         classes = await session.scalars(sentence)
         for clazz in classes:
             new_clazz = models.Class(label=clazz.label, time_hour=clazz.time_hour, time_minute=clazz.time_minute,
-                                     client_id=client.id)
+                                     client_id=client.id, time_duration=clazz.time_duration)
             session.add(new_clazz)
         await session.refresh(client)
         return client
