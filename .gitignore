@@ -1,1 +1,6 @@
-/wakatta/config.py
+wakatta/config.py
+venv
+__pycache__
+obj
+bin
+.vs
