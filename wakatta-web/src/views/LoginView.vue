@@ -13,7 +13,6 @@
       </el-form-item>
       <RouterLink to="/register"><span class=" text-white text-sm hover:text-blue-400">没有账号？</span>
       </RouterLink>
-      <el-tag v-if="error" class="ml-2" type="danger">登录失败, 可能是邮箱或密码错误</el-tag>
     </el-form>
   </div>
 </template>
@@ -23,6 +22,7 @@ import Qs from 'qs';
 import { useUserStore } from '../stores/UserStore';
 import axios from 'axios';
 import { ref } from "vue";
+import { ElNotification } from 'element-plus'
 
 const userStore = useUserStore()
 const loginForm = ref()
@@ -58,8 +58,11 @@ const submitForm = async () =>
         location.href = '/'
       } catch (e)
       {
-        console.log(e.response.data.error)
-        error = true
+        ElNotification({
+          title: '登录失败',
+          message: '请检查用户名或密码',
+          type: 'error',
+        })
       }
     }
   });

@@ -43,7 +43,7 @@ class Client(ModelBase):
 
 class UserRead(schemas.BaseUser[uuid.UUID]):
     nickname: str
-    privilege: int
+    privilege: bool
 
 
 class UserCreate(schemas.BaseUserCreate):
@@ -52,3 +52,4 @@ class UserCreate(schemas.BaseUserCreate):
 
 class UserUpdate(schemas.BaseUserUpdate):
     nickname: str
+    privilege: bool

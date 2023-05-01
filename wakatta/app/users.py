@@ -28,7 +28,7 @@ bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=jwt_secret, lifetime_seconds=3600)
+    return JWTStrategy(secret=jwt_secret, lifetime_seconds=60 * 60 * 24 * 30)
 
 
 auth_backend = AuthenticationBackend(
@@ -44,6 +44,15 @@ current_active_user = fastapi_users.current_user(active=True)
 
 async def current_privilege_user(user: User = Depends(current_active_user)) -> User:
     if user.privilege != 1:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='No permission.',
+        )
+    return user
+
+
+async def current_superuser(user: User = Depends(current_active_user)) -> User:
+    if not user.is_superuser:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail='No permission.',

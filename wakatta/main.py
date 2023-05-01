@@ -1,12 +1,15 @@
+from typing import List
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from starlette.middleware.cors import CORSMiddleware
 
 import services
+from app.models import User
 from services import db_session
-from app import clients, schedules, session, models
+from app import clients, schedules, session, models, schemas
 from app.schemas import UserRead, UserUpdate, UserCreate
-from app.users import fastapi_users, auth_backend
+from app.users import fastapi_users, auth_backend, current_superuser, current_privilege_user
 
 app = FastAPI()
 scheduler = AsyncIOScheduler()
@@ -39,7 +42,7 @@ async def on_startup():
     scheduler.start()
 
 
-@app.get("/statistics")
+@app.get("/statistics", tags=['statistics'], dependencies=[Depends(current_privilege_user)])
 async def get_statistics():
     async with db_session() as the_session:
         return {
@@ -55,3 +58,10 @@ async def get_statistics():
                 'online_users_count': len(session.online_clients),
             }
         }
+
+
+@app.get("/statistics/users", response_model=List[schemas.UserRead], tags=['statistics'], dependencies=[Depends(current_superuser)])
+async def get_all_users():
+    async with db_session() as the_session:
+        users = await services.select_models(the_session, User, None)
+        return users.all()

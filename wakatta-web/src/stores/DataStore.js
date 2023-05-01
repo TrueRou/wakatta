@@ -16,12 +16,15 @@ export const useDataStore = defineStore('data', () =>
 
     async function fetchData()
     {
-        const response = await axios.get(config.API_STATISTICS, userStore.getAuthorizedHeader())
-        const statistics = response.data
-        clients.value = statistics.clients
-        schedules.value = statistics.schedules
-        online_users.value = statistics.online_users
-        dashboard_statistics.value = statistics.dashboard_statistics
+        if (localStorage.getItem('token') != null)
+        {
+            const response = await axios.get(config.API_STATISTICS, userStore.getAuthorizedHeader())
+            const statistics = response.data
+            clients.value = statistics.clients
+            schedules.value = statistics.schedules
+            online_users.value = statistics.online_users
+            dashboard_statistics.value = statistics.dashboard_statistics
+        }
     }
 
     return { clients, schedules, online_users, fetchData }

@@ -3,18 +3,14 @@
         <el-page-header @back="clickBack">
             <template #content>
                 <div class="flex items-center">
-                    <el-avatar class="mr-3" :size="32"
-                        src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-                    <span class="text-large font-600 mr-3"> Title </span>
-                    <span class="text-sm mr-2" style="color: var(--el-text-color-regular)">
-                        Sub title
+                    <el-icon class="mr-2">
+                        <i class="fa fa-dashboard"></i>
+                    </el-icon>
+                    <span class="text-large font-600 mr-3 font-bold"> 仪表盘 </span>
+                    <span class="text-xs mr-2" style="color: var(--el-text-color-regular)">
+                        展示客户端、日程表和用户的相关信息和状态
                     </span>
-                    <el-tag>Default</el-tag>
-                </div>
-            </template>
-            <template #extra>
-                <div class="flex items-center">
-                    <el-button @click="clickLogout">登出</el-button>
+                    <el-tag type="success">拥有权限</el-tag>
                 </div>
             </template>
         </el-page-header>
@@ -35,11 +31,6 @@ const logged = computed(() =>
 {
     return userStore.isLogged()
 })
-
-const clickLogout = () =>
-{
-    router.push('/logout')
-}
 
 const clickBack = () =>
 {

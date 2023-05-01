@@ -14,7 +14,6 @@
       <el-form-item>
         <el-button style="width: 100%" type="primary" @click="submitForm()">注册</el-button>
       </el-form-item>
-      <el-tag v-if="error" class="ml-2" type="danger">注册失败, 可能是已经有相同邮箱的用户了</el-tag>
     </el-form>
   </div>
 </template>
@@ -22,6 +21,7 @@
 import config from '../config'
 import { ref } from "vue";
 import axios from "axios";
+import { ElNotification } from 'element-plus'
 const registerForm = ref()
 const formContent = ref({ email: '', password: '', name: '' })
 
@@ -35,7 +35,6 @@ const rules = {
   }],
   name: [{ required: true, message: '请填写用户名', trigger: 'blur' },]
 }
-let error = ref(false)
 const submitForm = async () =>
 {
   var params = {
@@ -50,14 +49,18 @@ const submitForm = async () =>
   {
     if (valid)
     {
-      axios.post(config.API_USER_REGISTER, params).then((response) =>
+      try
       {
+        await axios.post(config.API_USER_REGISTER, params)
         location.href = '/'
-      }).catch((response) =>
+      } catch (e)
       {
-        console.log(response)
-        error = true
-      })
+        ElNotification({
+          title: '注册失败',
+          message: '注册的邮箱可能已经被使用',
+          type: 'error',
+        })
+      }
     }
   });
 }
