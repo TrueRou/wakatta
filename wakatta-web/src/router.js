@@ -5,6 +5,9 @@ import LoginView from './views/LoginView.vue'
 import RegisterView from './views/RegisterView.vue'
 import DeniedView from './views/DeniedView.vue'
 import ManageView from './views/ManageView.vue'
+import ClientView from './views/ClientView.vue'
+import ScheduleView from './views/ScheduleView.vue'
+import SchedulesView from './views/SchedulesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,12 +42,19 @@ const router = createRouter({
       component: ManageView
     },
     {
-      path: '/clients',
-      name: 'Clients',
+      path: '/client/:id',
+      name: 'Client',
+      component: ClientView
     },
     {
-      path: '/schedules',
-      name: 'Schedules',
+      path: '/schedule/:id',
+      name: 'Schedule',
+      component: ScheduleView
+    },
+    {
+      path: '/schedules/:id',
+      name: 'Schedule',
+      component: SchedulesView
     },
   ]
 })

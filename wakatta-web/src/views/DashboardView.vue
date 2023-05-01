@@ -22,6 +22,8 @@ import { onMounted, ref, computed } from 'vue'
 import { useUserStore } from '../stores/UserStore'
 import { useDataStore } from '../stores/DataStore'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
+import config from '../config'
 
 const userStore = useUserStore()
 const dataStore = useDataStore()

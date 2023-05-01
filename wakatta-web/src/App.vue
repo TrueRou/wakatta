@@ -21,7 +21,7 @@ const clickDashboard = () =>
 
 const clickClient = (id) =>
 {
-  router.push(`/clients/${id}`)
+  router.push(`/client/${id}`)
 }
 
 const clickManage = () =>
@@ -29,9 +29,9 @@ const clickManage = () =>
   router.push('/manage')
 }
 
-const clickSchedule = (id) =>
+const clickSchedules = () =>
 {
-  router.push(`/schedules/${id}`)
+  router.push(`/schedules`)
 }
 
 const sideShown = computed(() =>
@@ -54,6 +54,12 @@ const sideShown = computed(() =>
             </el-icon>
             仪表盘
           </el-menu-item>
+          <el-menu-item index="@schedules" @click="clickSchedules">
+            <el-icon>
+              <i class="fa fa-calendar"></i>
+            </el-icon>
+            日程表管理
+          </el-menu-item>
           <el-sub-menu index="@clients">
             <template #title>
               <el-icon>
@@ -63,18 +69,6 @@ const sideShown = computed(() =>
             </template>
             <el-menu-item v-for="client in dataStore.clients" :index="'c' + client.id" @click="clickClient(client.id)">
               {{ client.identifier }}
-            </el-menu-item>
-          </el-sub-menu>
-          <el-sub-menu index="@schedules">
-            <template #title>
-              <el-icon>
-                <i class="fa fa-calendar"></i>
-              </el-icon>
-              日程表管理
-            </template>
-            <el-menu-item v-for="schedule in dataStore.schedules" :index="'s' + schedule.id"
-              @click="clickSchedule(schedule.id)">
-              {{ schedule.label }}
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item index="@manage" @click="clickManage">
@@ -87,7 +81,7 @@ const sideShown = computed(() =>
       </el-scrollbar>
     </el-aside>
     <el-main style="padding: 0;">
-      <RouterView />
+      <RouterView :key="router.currentRoute.value.fullPath" />
     </el-main>
   </el-container>
 </template>
