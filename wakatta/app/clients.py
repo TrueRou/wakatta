@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
+from random_words import RandomNicknames
 from starlette import status
 
 import services
@@ -11,15 +12,15 @@ from app.users import current_privilege_user
 from services import db_session
 
 client_router = APIRouter(prefix='/client', tags=['client'])
+random = RandomNicknames()
 
 
-@client_router.put('', response_model=schemas.Client)
-async def put_client(hardware_id: str, identifier: str):
+@client_router.get('', response_model=schemas.Client)
+async def get_client(hardware_id: str):
     async with db_session() as session:
         client = await services.select_model(session, models.Client, models.Client.hardware_id == hardware_id)
-        if client is not None:
-            client.identifier = identifier
-        else:
+        if client is None:
+            identifier = random.random_nick(gender='f')
             client = models.Client(hardware_id=hardware_id, identifier=identifier)
             await services.add_model(session, client)
         refresh_client(client.id)

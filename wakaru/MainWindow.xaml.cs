@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +22,22 @@ namespace wakaru
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static readonly MainWindow Instance = (MainWindow) Application.Current.MainWindow;
+
         public MainWindow()
         {
             InitializeComponent();
+            Network.Heartbeat();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Instance.Close();
+        }
+
+        private void ColorZone_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Instance.DragMove();
         }
     }
 }

@@ -1,30 +1,30 @@
-import asyncio
 import queue
 from datetime import timedelta, datetime
 from typing import List
-
-import sqlalchemy
 from sqlalchemy import null
 
 import services
 from app import schedules, models
 
 online_clients = []
+online_clients_lifetime = {}
 message_queue = queue.Queue()
 client_messages = {}
 client_need_refresh = {}
 
 
 def check_online_clients():
-    for index, client in enumerate(online_clients):
-        last_activity = client['last_activity']
+    print(online_clients)
+    for client in online_clients:
+        last_activity = online_clients_lifetime[client]
         if last_activity + timedelta(seconds=5) < datetime.now():
-            last_activity.pop(index)
+            online_clients.remove(client)
 
 
 def refresh_client(client_id: int):
     client_messages[client_id] = []
     client_need_refresh[client_id] = False
+    online_clients_lifetime[client_id] = datetime.now()
 
 
 def enqueue_message(message: str):
