@@ -7,7 +7,7 @@ Python & C# driven online meeting ringing and management solution.
 - wakatta-web: Web frontend, written with vue and element-plus
 
 ## Compose
-- wakaru & wakatta: Ringing platform
+- wakaru & wakatta: ringing platform
 - obs: virtual camera
 - vac: virtual audio
 - hyperv: virtualization platform
