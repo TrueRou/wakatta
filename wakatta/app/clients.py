@@ -46,6 +46,13 @@ async def heartbeat_client(client_id: int):
     return response
 
 
+@client_router.get('/all', response_model=List[schemas.Client], dependencies=[Depends(current_privilege_user)])
+async def get_clients():
+    async with db_session() as session:
+        clients = await services.select_models(session, models.Client, None)
+        return clients.all()
+
+
 @client_router.post('/class', response_model=schemas.Class, dependencies=[Depends(current_privilege_user)])
 async def create_class(client_id: int, label: str, time_hour: int, time_minute: int):
     async with db_session() as session:

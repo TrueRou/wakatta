@@ -1,32 +1,69 @@
 <script setup>
 import { RouterView } from 'vue-router'
+import { onMounted, ref, computed } from 'vue'
+import { useUserStore } from './stores/UserStore'
+import { useDataStore } from './stores/DataStore'
+import { useRouter } from 'vue-router'
+const clients = ref([])
+const userStore = useUserStore()
+const dataStore = useDataStore()
+const router = useRouter()
 
-onMounted(() => {
-  
-}),
+onMounted(async () =>
+{
+  await dataStore.fetchData()
+})
+
+const clickDashboard = () =>
+{
+  router.push('/')
+}
+
+const clickClient = (id) =>
+{
+  router.push(`/clients/${id}`)
+}
+
+const clickManage = () =>
+{
+  router.push('/manage')
+}
+
+const clickSchedule = (id) =>
+{
+  router.push(`/schedules/${id}`)
+}
+
+const sideShown = computed(() =>
+{
+  if (!userStore.isLogged()) return false;
+  if (router.currentRoute.value.href == "/denied") return false;
+  return true;
+})
+
 </script>
 
 <template>
   <el-container class="h-full">
-    <el-aside class="h-full">
+    <el-aside v-if="sideShown" class="h-full">
       <el-scrollbar class="h-full">
-        <el-menu class="h-full" default-active="@dashboard" :default-openeds="['@clients']">
-          <el-menu-item index="dashboard" route="/dashboard">
+        <el-menu class="h-full" default-active="@dashboard" active-text-color="#303133" :default-openeds="['@clients']">
+          <el-menu-item index="@dashboard" @click="clickDashboard">
             <el-icon>
               <i class="fa fa-dashboard"></i>
             </el-icon>
             仪表盘
           </el-menu-item>
-          <el-sub-menu index="client">
+          <el-sub-menu index="@clients">
             <template #title>
               <el-icon>
                 <i class="fa fa-users"></i>
               </el-icon>
               客户端管理
             </template>
-            
-            <el-menu-item v-for="client in " index="dfdsf">Client1</el-menu-item>
-            <el-menu-item index="2ff">Client2</el-menu-item>
+            <el-menu-item v-for="client in dataStore.clients" :index="'c' + client.id" @click="clickClient(client.id)">
+              {{ client.identifier }}
+            </el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="@schedules">
             <template #title>
@@ -35,15 +72,21 @@ onMounted(() => {
               </el-icon>
               日程表管理
             </template>
-            <el-menu-item index="22ff">Schedule1</el-menu-item>
-            <el-menu-item index="22fff">Schedule2</el-menu-item>
-            <el-menu-item index="22fffdf">Schedule3</el-menu-item>
-            <el-menu-item index="22ffsdf">Schedule4</el-menu-item>
+            <el-menu-item v-for="schedule in dataStore.schedules" :index="'s' + schedule.id"
+              @click="clickSchedule(schedule.id)">
+              {{ schedule.label }}
+            </el-menu-item>
           </el-sub-menu>
+          <el-menu-item index="@manage" @click="clickManage">
+            <el-icon>
+              <i class="fa fa-user"></i>
+            </el-icon>
+            用户管理
+          </el-menu-item>
         </el-menu>
       </el-scrollbar>
     </el-aside>
-    <el-main class="m-5">
+    <el-main style="padding: 0;">
       <RouterView />
     </el-main>
   </el-container>
@@ -54,5 +97,3 @@ onMounted(() => {
   height: 100%;
 }
 </style>
-
-

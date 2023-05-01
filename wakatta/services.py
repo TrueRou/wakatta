@@ -2,7 +2,7 @@ import contextlib
 from typing import TypeVar, AsyncContextManager
 
 from fastapi import HTTPException
-from sqlalchemy import select, ScalarResult, delete
+from sqlalchemy import select, ScalarResult, delete, func
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from starlette import status
@@ -55,7 +55,9 @@ async def get_model(session: AsyncSession, ident, model: V) -> V:
 
 
 def _build_select_sentence(obj, condition, offset=-1, limit=-1, order_by=None):
-    base = select(obj).where(condition)
+    base = select(obj)
+    if condition is not None:
+        base = base.where(condition)
     if order_by is not None:
         base = base.order_by(order_by)
     if offset != -1:
@@ -74,6 +76,13 @@ async def select_model(session: AsyncSession, obj: V, condition, offset=-1, limi
 async def select_models(session: AsyncSession, obj: V, condition, offset=-1, limit=-1, order_by=None) -> ScalarResult[V]:
     sentence = _build_select_sentence(obj, condition, offset, limit, order_by)
     model = await session.scalars(sentence)
+    return model
+
+
+async def select_models_count(session: AsyncSession, obj: V, condition, offset=-1, limit=-1, order_by=None) -> int:
+    sentence = _build_select_sentence(obj, condition, offset, limit, order_by)
+    sentence = sentence.with_only_columns(func.count(obj.id)).order_by(None)
+    model = await session.scalar(sentence)
     return model
 
 

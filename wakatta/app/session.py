@@ -14,7 +14,6 @@ client_need_refresh = {}
 
 
 def check_online_clients():
-    print(online_clients)
     for client in online_clients:
         last_activity = online_clients_lifetime[client]
         if last_activity + timedelta(seconds=5) < datetime.now():

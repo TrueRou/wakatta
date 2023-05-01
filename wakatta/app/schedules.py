@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from fastapi import APIRouter, Depends
 from starlette import status
@@ -19,6 +20,13 @@ async def _broadcast_schedule(schedule_id: int):
             await apply_schedule(schedule_id, client.id)
 
 
+@schedule_router.get('/all', response_model=List[schemas.Schedule])
+async def get_schedules():
+    async with db_session() as session:
+        schedules = await services.select_models(session, models.Schedule, None)
+        return schedules.all()
+
+
 @schedule_router.post('', response_model=schemas.Schedule)
 async def create_schedule(label: str):
     async with db_session() as session:
@@ -28,10 +36,12 @@ async def create_schedule(label: str):
 
 
 @schedule_router.post('/class', response_model=schemas.Class)
-async def create_schedule_class(schedule_id: int, label: str, time_hour: int, time_minute: int, time_duration: int = 40):
+async def create_schedule_class(schedule_id: int, label: str, time_hour: int, time_minute: int,
+                                time_duration: int = 40):
     async with db_session() as session:
         await services.get_model(session, schedule_id, models.Schedule)
-        clazz = models.ScheduleClass(label=label, time_hour=time_hour, time_minute=time_minute, schedule_id=schedule_id, time_duration=time_duration)
+        clazz = models.ScheduleClass(label=label, time_hour=time_hour, time_minute=time_minute, schedule_id=schedule_id,
+                                     time_duration=time_duration)
         await services.add_model(session, clazz)
         await _broadcast_schedule(schedule_id)
         return clazz
