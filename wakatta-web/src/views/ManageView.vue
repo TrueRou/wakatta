@@ -18,8 +18,8 @@
       <el-container style="display: flex;">
         <el-table :data="userList" :border="true" :default-sort="{ prop: 'date', order: 'descending' }"
           style="width: 100%; display: flex; justify-content: center;">
-          <el-table-column prop="id" label="id" width="400" />
-          <el-table-column prop="nickname" label="用户名" width="300">
+          <el-table-column prop="id" label="id" width="310" />
+          <el-table-column prop="nickname" label="用户名" width="150">
             <template #default="scope">
               <el-input v-model="scope.row.nickname"></el-input>
             </template>
@@ -29,17 +29,17 @@
               <el-input v-model="scope.row.email"></el-input>
             </template>
           </el-table-column>
-          <el-table-column width="120" prop="privilege" label="面板访问权限">
+          <el-table-column width="110" prop="privilege" label="面板访问权限">
             <template #default="scope">
               <el-switch v-model="scope.row.privilege" />
             </template>
           </el-table-column>
-          <el-table-column width="120" prop="is_superuser" label="用户管理权限">
+          <el-table-column width="110" prop="is_superuser" label="用户管理权限">
             <template #default="scope">
               <el-switch v-model="scope.row.is_superuser" />
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="300">
+          <el-table-column label="操作" width="160">
             <template #default="scope">
               <el-button type="primary" @click="handleEdit(scope.row)">保存</el-button>
               <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>

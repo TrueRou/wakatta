@@ -59,11 +59,17 @@ async def get_clients():
         return clients.all()
 
 
+@client_router.get('/class', response_model=schemas.Class, dependencies=[Depends(current_privilege_user)])
+async def get_class(client_id: int):
+    async with db_session() as session:
+        return await services.get_model(session, client_id, models.Client)
+
+
 @client_router.post('/class', response_model=schemas.Class, dependencies=[Depends(current_privilege_user)])
-async def create_class(client_id: int, label: str, time_hour: int, time_minute: int):
+async def create_class(client_id: int, form: schemas.ClassBase):
     async with db_session() as session:
         await services.get_model(session, client_id, models.Client)
-        clazz = models.Class(label=label, time_hour=time_hour, time_minute=time_minute, client_id=client_id)
+        clazz = models.Class(label=form.label, time_hour=form.time_hour, time_minute=form.time_minute, client_id=client_id)
         await services.add_model(session, clazz)
         return clazz
 
