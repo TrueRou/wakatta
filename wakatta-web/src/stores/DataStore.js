@@ -27,13 +27,14 @@ export const useDataStore = defineStore('data', () =>
         }
     }
 
-    async function removeClass(id)
+    async function refreshSchedules()
     {
         if (localStorage.getItem('token') != null)
         {
-            await axios.delete(config.API_CLIENT_CLASS + `?class_id=${id}`, userStore.getAuthorizedHeader())
+            const response = await axios.get(config.API_SCHEDULE_ALL, userStore.getAuthorizedHeader())
+            schedules.value = response.data
         }
     }
 
-    return { clients, schedules, online_users, fetchData, removeClass }
+    return { clients, schedules, online_users, fetchData, refreshSchedules }
 })

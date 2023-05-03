@@ -54,23 +54,23 @@ const sideShown = computed(() =>
             </el-icon>
             仪表盘
           </el-menu-item>
-          <el-menu-item index="@schedules" @click="clickSchedules">
-            <el-icon>
-              <i class="fa fa-calendar"></i>
-            </el-icon>
-            日程表管理
-          </el-menu-item>
           <el-sub-menu index="@clients">
             <template #title>
               <el-icon>
                 <i class="fa fa-users"></i>
               </el-icon>
-              客户端管理
+              会议管理
             </template>
             <el-menu-item v-for="client in dataStore.clients" :index="'c' + client.id" @click="clickClient(client.id)">
               {{ client.identifier }}
             </el-menu-item>
           </el-sub-menu>
+          <el-menu-item index="@schedules" @click="clickSchedules">
+            <el-icon>
+              <i class="fa fa-calendar"></i>
+            </el-icon>
+            日程管理
+          </el-menu-item>
           <el-menu-item index="@manage" @click="clickManage">
             <el-icon>
               <i class="fa fa-user"></i>

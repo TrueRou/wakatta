@@ -6,9 +6,9 @@
                     <el-icon class="mr-2">
                         <i class="fa fa-dashboard"></i>
                     </el-icon>
-                    <span class="text-large font-600 mr-3 font-bold"> 客户端管理 - {{ clientData.identifier }} </span>
+                    <span class="text-large font-600 mr-3 font-bold"> 会议管理 - {{ clientData.identifier }} </span>
                     <span class="text-xs mr-2" style="color: var(--el-text-color-regular)">
-                        编辑客户端信息和课程表
+                        管理会议的课程和订阅
                     </span>
                     <el-tag type="success">拥有权限</el-tag>
                 </div>
@@ -34,12 +34,6 @@
                         <div class="flex">
                             <el-button class="flex" type="primary">刷新</el-button>
                             <el-button class="flex" type="danger">删除</el-button>
-                        </div>
-                        <div class="flex mt-5">
-                            <el-button class="flex" type="success">手动打铃</el-button>
-                        </div>
-                        <div class="flex mt-5">
-                            <el-button class="flex" type="warn">暂停打铃</el-button>
                         </div>
                     </div>
                 </el-col>
@@ -88,7 +82,8 @@
                 <el-tab-pane label="订阅">
                     <div class="flex mb-3">
                         <el-button type="primary">修改订阅</el-button>
-                        <el-button>转到</el-button>
+                        <el-button>管理订阅</el-button>
+                        <el-button type="danger">取消订阅</el-button>
                     </div>
                     <el-table border :data="tableData" style="width: 100%">
                         <el-table-column prop="date" label="Date" width="180" />
@@ -150,12 +145,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useUserStore } from '../stores/UserStore'
-import { useDataStore } from '../stores/DataStore'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import Qs from 'qs';
 import config from '../config'
 
 const clientData = ref({})
@@ -167,14 +160,12 @@ const formClassCreating = ref()
 const formClassEditing = ref()
 
 const userStore = useUserStore()
-const dataStore = useDataStore()
 const router = useRouter()
 
 const formRules = {
     label: [{ required: true, message: '请填写课程名称', trigger: 'blur' },],
 }
 
-const logged = computed(() => userStore.isLogged())
 const clickBack = () => router.back()
 
 const refreshClient = async () =>
@@ -202,7 +193,6 @@ const createClassSubmit = async () =>
     {
         if (valid)
         {
-            const body = Qs.stringify(dataClassCreating)
             await axios.post(config.API_CLIENT_CLASS + `?client_id=${clientData.value.id}`, dataClassCreating.value, userStore.getAuthorizedHeader())
             dialogClassCreating.value = false;
             await refreshClient()
@@ -221,8 +211,12 @@ const editClassSubmit = async () =>
     })
 }
 
-const removeClass = (id) => dataStore.removeClass(id)
+const removeClass = async (id) =>
+{
+    await axios.delete(config.API_CLIENT_CLASS + `?class_id=${id}`, userStore.getAuthorizedHeader())
+    await refreshClient()
+}
 
-onMounted(async () => refreshClient())
+onMounted(async () => await refreshClient())
 
 </script>

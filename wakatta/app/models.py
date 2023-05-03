@@ -34,7 +34,7 @@ class Schedule(Base):
     __tablename__ = "schedule"
     id = Column(Integer, primary_key=True, autoincrement=True)
     label = Column(String(length=32), nullable=False)
-    classes = relationship('ScheduleClass', backref=backref('schedule', lazy=False), lazy='dynamic')
+    classes = relationship('ScheduleClass', backref=backref('schedule', lazy=False), lazy='selectin', uselist=True)
 
 
 class ScheduleClass(Base):

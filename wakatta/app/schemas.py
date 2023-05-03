@@ -29,16 +29,20 @@ class ClassUpdate(ModelBase):
     __annotations__ = convert_to_optional(ClassBase)
 
 
-class Schedule(ModelBase):
-    id: int
+class ScheduleBase(ModelBase):
     label: str
+
+
+class Schedule(ScheduleBase):
+    id: int
+    classes: list[Class]
 
 
 class Client(ModelBase):
     id: int
     identifier: str
     subscribe_schedule: Optional[Schedule]
-    classes: List[Class]
+    classes: list[Class]
 
 
 class Statistics(ModelBase):

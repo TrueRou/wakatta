@@ -52,8 +52,8 @@ const router = createRouter({
       component: ScheduleView
     },
     {
-      path: '/schedules/:id',
-      name: 'Schedule',
+      path: '/schedules',
+      name: 'Schedules',
       component: SchedulesView
     },
   ]

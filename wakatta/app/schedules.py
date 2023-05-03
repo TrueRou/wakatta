@@ -6,10 +6,11 @@ from starlette import status
 
 import services
 from app import schemas, models
+from app.schemas import ScheduleBase
 from app.users import current_privilege_user
 from services import db_session
 
-schedule_router = APIRouter(prefix='/schedules', tags=['schedules'], dependencies=[Depends(current_privilege_user)])
+schedule_router = APIRouter(prefix='/schedule', tags=['schedule'], dependencies=[Depends(current_privilege_user)])
 
 
 async def _broadcast_schedule(schedule_id: int):
@@ -28,20 +29,33 @@ async def get_schedules():
 
 
 @schedule_router.post('', response_model=schemas.Schedule)
-async def create_schedule(label: str):
+async def create_schedule(form: ScheduleBase):
     async with db_session() as session:
-        schedule = models.Schedule(label=label)
+        schedule = models.Schedule(label=form.label)
         await services.add_model(session, schedule)
         return schedule
 
 
+@schedule_router.get('', response_model=schemas.Schedule)
+async def get_schedule(schedule_id: int):
+    async with db_session() as session:
+        schedule = await services.get_model(session, schedule_id, models.Schedule)
+        return schedule
+
+
+@schedule_router.delete('', status_code=status.HTTP_200_OK)
+async def delete_schedule(schedule_id: int):
+    async with db_session() as session:
+        await services.delete_model(session, schedule_id, models.Schedule)
+
+
 @schedule_router.post('/class', response_model=schemas.Class)
-async def create_schedule_class(schedule_id: int, label: str, time_hour: int, time_minute: int,
-                                time_duration: int = 40):
+async def create_schedule_class(schedule_id: int, form: schemas.ClassBase):
     async with db_session() as session:
         await services.get_model(session, schedule_id, models.Schedule)
-        clazz = models.ScheduleClass(label=label, time_hour=time_hour, time_minute=time_minute, schedule_id=schedule_id,
-                                     time_duration=time_duration)
+        clazz = models.ScheduleClass(label=form.label, time_hour=form.time_hour, time_minute=form.time_minute,
+                                     schedule_id=schedule_id,
+                                     time_duration=form.time_duration)
         await services.add_model(session, clazz)
         await _broadcast_schedule(schedule_id)
         return clazz
