@@ -31,7 +31,7 @@ export const useDataStore = defineStore('data', () =>
     {
         if (localStorage.getItem('token') != null)
         {
-            await axios.delete(config.API_CLIENT_CLASS + `?id=${id}`, userStore.getAuthorizedHeader())
+            await axios.delete(config.API_CLIENT_CLASS + `?class_id=${id}`, userStore.getAuthorizedHeader())
         }
     }
 

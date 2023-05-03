@@ -205,6 +205,7 @@ const createClassSubmit = async () =>
             const body = Qs.stringify(dataClassCreating)
             await axios.post(config.API_CLIENT_CLASS + `?client_id=${clientData.value.id}`, dataClassCreating.value, userStore.getAuthorizedHeader())
             dialogClassCreating.value = false;
+            await refreshClient()
         }
     })
 }

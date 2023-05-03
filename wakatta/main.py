@@ -36,13 +36,12 @@ app.add_middleware(
 async def on_startup():
     await services.create_db_and_tables()
     await session.update_subscription()  # Apply subscription when startup to ensure lessons of current weekday
-    scheduler.add_job(session.check_online_clients, 'interval', seconds=5)
-    scheduler.add_job(session.dequeue_messages, 'interval', seconds=1)
+    scheduler.add_job(session.tick_session, 'interval', seconds=1)
     scheduler.add_job(session.update_subscription, 'cron', hour=0)  # Apply subscription every single day
     scheduler.start()
 
 
-@app.get("/statistics", tags=['statistics'], dependencies=[Depends(current_privilege_user)])
+@app.get("/statistics", tags=['statistics'], response_model=schemas.Statistics, dependencies=[Depends(current_privilege_user)])
 async def get_statistics():
     async with db_session() as the_session:
         return {

@@ -41,6 +41,13 @@ class Client(ModelBase):
     classes: List[Class]
 
 
+class Statistics(ModelBase):
+    online_users: list[int]
+    clients: list[Client]
+    schedules: list[Schedule]
+    dashboard_statistics: dict
+
+
 class UserRead(schemas.BaseUser[uuid.UUID]):
     nickname: str
     privilege: bool

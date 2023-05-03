@@ -6,40 +6,39 @@ from sqlalchemy import null
 import services
 from app import schedules, models
 
-online_clients = []
-online_clients_lifetime = {}
-message_queue = queue.Queue()
-client_messages = {}
-client_need_refresh = {}
+online_clients: List[int] = []
+client_data: dict[int, dict] = {}
+client_packets: dict[int, queue.Queue[dict]] = {}
 
 
-def check_online_clients():
+def tick_session():
     for client in online_clients:
-        last_activity = online_clients_lifetime[client]
-        if last_activity + timedelta(seconds=5) < datetime.now():
+        # remove inactive clients
+        last_activity = client_data[client]['last_activity']
+        if last_activity is None or last_activity + timedelta(seconds=5) < datetime.now():
             online_clients.remove(client)
+            client_data[client] = dict()
+            client_packets[client] = queue.Queue()
+            continue  # pass other actions
 
 
-def refresh_client(client_id: int):
-    client_messages[client_id] = []
-    client_need_refresh[client_id] = False
-    online_clients_lifetime[client_id] = datetime.now()
+def tick_client(client_id: int):
+    if client_id not in online_clients:
+        client_data[client_id] = dict()
+        client_packets[client_id] = queue.Queue()
+    client_data[client_id]['last_activity'] = datetime.now()
 
 
-def enqueue_message(message: str):
-    message_queue.put(message)
+def send_packet(packet_id: int, payload: str, client_id: int):
+    client_packets[client_id].put({
+        'packet_id': packet_id,
+        'payload': payload
+    })
 
 
-def enqueue_message_client(message: str, client_id: int):
-    if isinstance(client_messages[client_id], List):
-        client_messages[client_id].append(message)
-
-
-def dequeue_messages():
-    while not message_queue.empty():
-        message = message_queue.get()
-        for client_id in online_clients:
-            enqueue_message_client(message, client_id)
+def send_packets(packet_id: int, payload: str):
+    for client in online_clients:
+        send_packet(packet_id, payload, client)
 
 
 async def update_subscription():
@@ -49,4 +48,4 @@ async def update_subscription():
             client_id = client.id
             await schedules.apply_schedule(client.subscribe_schedule_id, client_id)
             if client_id in online_clients:
-                client_need_refresh[client_id] = True
+                send_packet(1, '', client_id)

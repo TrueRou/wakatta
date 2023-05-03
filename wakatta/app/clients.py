@@ -6,8 +6,7 @@ from starlette import status
 
 import services
 from app import models, schemas
-from app.session import online_clients, client_messages, refresh_client, client_need_refresh, enqueue_message, \
-    enqueue_message_client
+from app.session import tick_client, client_packets, send_packet, send_packets
 from app.users import current_privilege_user
 from services import db_session
 
@@ -23,7 +22,7 @@ async def put_client(hardware_id: str):
             identifier = random.random_nick(gender='f')
             client = models.Client(hardware_id=hardware_id, identifier=identifier)
             await services.add_model(session, client)
-        refresh_client(client.id)
+        tick_client(client.id)
         return client
 
 
@@ -36,14 +35,8 @@ async def get_classes(client_id: int):
 
 @client_router.get('/heartbeat')
 async def heartbeat_client(client_id: int):
-    if client_id not in online_clients:
-        online_clients.append(client_id)
-    response = {
-        'messages': client_messages[client_id],
-        'need_refresh': client_need_refresh[client_id]
-    }
-    refresh_client(client_id)
-    return response
+    tick_client(client_id)
+    return list(client_packets[client_id].queue)
 
 
 @client_router.get('', response_model=schemas.Client, dependencies=[Depends(current_privilege_user)])
@@ -90,7 +83,4 @@ async def delete_class(class_id: int):
 
 @client_router.post('/message', status_code=status.HTTP_200_OK, dependencies=[Depends(current_privilege_user)])
 async def create_message(message: str, client_id: int = -1):
-    if client_id == -1:
-        enqueue_message(message)
-    else:
-        enqueue_message_client(message, client_id)
+    send_packet(1, message, client_id) if client_id != -1 else send_packets(1, message)
