@@ -42,8 +42,8 @@ namespace wakaru.Online
         public async Task ScheduleJobs()
         {
             var overTime = OnlineUtils.DelayDatetime(TimeHour, TimeMinute, TimeDuration);
-            await ScheduleManager.AddCornJob(JobBuilder.Create<ClassBeginRingJob>().Build(), TimeHour, TimeMinute);
-            await ScheduleManager.AddCornJob(JobBuilder.Create<ClassBeginRingJob>().Build(), overTime.Hour, overTime.Minute);
+            await ScheduleManager.AddRingCornJob(JobBuilder.Create<ClassBeginRingJob>().Build(), TimeHour, TimeMinute);
+            await ScheduleManager.AddRingCornJob(JobBuilder.Create<ClassBeginRingJob>().Build(), overTime.Hour, overTime.Minute);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using wakaru.Quartz;
 
 namespace wakaru.Online
 {
@@ -18,6 +19,7 @@ namespace wakaru.Online
     }
     class WakattaHeartbeat : IJob
     {
+        public static readonly int HeartBeatInterval = 1; 
         public static async Task HandlePacket(HeartbeatPacket packet)
         {
             switch (packet.PacketId)
@@ -31,6 +33,12 @@ namespace wakaru.Online
                     break;
             }
         }
+
+        public static async Task ScheduleJob()
+        {
+            await ScheduleManager.AddClientIntervalJob(JobBuilder.Create<WakattaHeartbeat>().Build(), HeartBeatInterval);
+        }
+
         public async Task Execute(IJobExecutionContext context)
         {
             if (WakattaClient.CurrentClient != null)

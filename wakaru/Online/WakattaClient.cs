@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Quartz;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using wakaru.Quartz;
 
 namespace wakaru.Online
 {
@@ -26,6 +28,8 @@ namespace wakaru.Online
         {
             var hardwareId = Configuration.Instance.HardwareID ?? OnlineUtils.CreateHardwareID();
             CurrentClient = await WebClient.GetJsonAsync<WakattaClient>("client", new { hardware_id = hardwareId });
+            await ScheduleManager.ResetClientScheduler();
+            await WakattaHeartbeat.ScheduleJob();
         }
 
         public async Task RefreshClasses()

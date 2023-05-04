@@ -10,24 +10,41 @@ namespace wakaru.Quartz
 {
     internal static class ScheduleManager
     {
-        private static StdScheduler? Scheduler { get; set; }
-        public static async void CreateScheduler()
+        private static StdScheduler? RingScheduler { get; set; }
+        private static StdScheduler? ClientScheduler { get; set; }
+        public static async Task CreateScheduler()
         {
             var schedulerFactory = new StdSchedulerFactory();
-            Scheduler = (StdScheduler?) await schedulerFactory.GetScheduler();
+            RingScheduler = (StdScheduler?) await schedulerFactory.GetScheduler();
+            ClientScheduler = (StdScheduler?)await schedulerFactory.GetScheduler();
+            await (RingScheduler?.Start() ?? Task.CompletedTask);
+            await (ClientScheduler?.Start() ?? Task.CompletedTask);
         }
 
-        public static async Task AddCornJob(IJobDetail jobDetail, int hour, int minute)
+        public static async Task AddRingCornJob(IJobDetail jobDetail, int hour, int minute)
         {
             ITrigger trigger = TriggerBuilder.Create()
                     .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(hour, minute))
                     .Build();
-            await (Scheduler?.ScheduleJob(jobDetail, trigger) ?? Task.CompletedTask);
+            await (RingScheduler?.ScheduleJob(jobDetail, trigger) ?? Task.CompletedTask);
         }
 
-        public static async Task ResetScheduler()
+        public static async Task AddClientIntervalJob(IJobDetail jobDetail, int interval)
         {
-            await (Scheduler?.Clear() ?? Task.CompletedTask);
+            ITrigger trigger = TriggerBuilder.Create()
+                    .WithSchedule(SimpleScheduleBuilder.RepeatSecondlyForever(interval))
+                    .Build();
+            await (ClientScheduler?.ScheduleJob(jobDetail, trigger) ?? Task.CompletedTask);
+        }
+
+        public static async Task ResetRingScheduler()
+        {
+            await (RingScheduler?.Clear() ?? Task.CompletedTask);
+        }
+
+        public static async Task ResetClientScheduler()
+        {
+            await (ClientScheduler?.Clear() ?? Task.CompletedTask);
         }
     }
 }
