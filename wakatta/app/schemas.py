@@ -25,8 +25,20 @@ class Class(ClassBase):
     id: int
 
 
+class ScheduleClassBase(ClassBase):
+    weekday: int
+
+
+class ScheduleClass(ScheduleClassBase):
+    id: int
+
+
 class ClassUpdate(ModelBase):
     __annotations__ = convert_to_optional(ClassBase)
+
+
+class ScheduleClassUpdate(ModelBase):
+    __annotations__ = convert_to_optional(ScheduleClassBase)
 
 
 class ScheduleBase(ModelBase):

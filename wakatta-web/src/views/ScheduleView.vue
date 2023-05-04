@@ -37,7 +37,31 @@
             <div class="mt-2 w-full">
                 <el-tabs>
                     <el-tab-pane label="课程">
-
+                        <div class="flex mb-3">
+                            <el-select v-model="filterDay" size="large" @change="refreshClasses">
+                                <el-option label="星期一" value="1"></el-option>
+                                <el-option label="星期二" value="2"></el-option>
+                                <el-option label="星期三" value="3"></el-option>
+                                <el-option label="星期四" value="4"></el-option>
+                                <el-option label="星期五" value="5"></el-option>
+                                <el-option label="星期六" value="6"></el-option>
+                                <el-option label="星期日" value="0"></el-option>
+                            </el-select>
+                            <el-button type="primary" @click="createClass()">新建</el-button>
+                            <el-button type="danger" class="ml-2">全部删除</el-button>
+                        </div>
+                        <el-table class="w-full" border :data="clientData.classes">
+                            <el-table-column prop="id" label="ID" width="80" />
+                            <el-table-column prop="label" label="课程" width="100" />
+                            <el-table-column prop="name" label="时间" />
+                            <el-table-column label="操作" width="240">
+                                <template #default="scope">
+                                    <el-button type="primary" @click="editClass(scope.row)">编辑</el-button>
+                                    <el-button type="info" @click="editClass(scope.row)">复制</el-button>
+                                    <el-button type="danger" @click="removeClass(scope.row.id)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
                     </el-tab-pane>
                     <el-tab-pane label="订阅者">
 
@@ -59,6 +83,8 @@ import axios from 'axios';
 import { useUserStore } from '../stores/UserStore';
 
 const scheduleData = ref({})
+const currentClasses = ref({})
+const filterDay = ref(new Date().getDay())
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -70,6 +96,28 @@ const refreshSchedule = async () =>
     let params = router.currentRoute.value.params
     const response = await axios.get(config.API_SCHEDULE + `?schedule_id=${params.id}`, userStore.getAuthorizedHeader())
     scheduleData.value = response.data
+    await refreshClasses()
+}
+
+const refreshClasses = async () =>
+{
+    const response = await axios.get(config.API_SCHEDULE_CLASS + `?schedule_id=${scheduleData.value.id}&weekday=${filterDay}`, userStore.getAuthorizedHeader())
+    currentClasses.value = response.data
+}
+
+const createClass = async () =>
+{
+
+}
+
+const editClass = async () =>
+{
+
+}
+
+const removeClass = async () =>
+{
+
 }
 
 onMounted(async () => await refreshSchedule())
