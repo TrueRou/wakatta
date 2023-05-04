@@ -6,6 +6,7 @@ from starlette import status
 
 import services
 from app import models, schemas
+from app.packets import Packets
 from app.session import tick_client, client_packets, send_packet, send_packets
 from app.users import current_privilege_user
 from services import db_session
@@ -83,4 +84,4 @@ async def delete_class(class_id: int):
 
 @client_router.post('/message', status_code=status.HTTP_200_OK, dependencies=[Depends(current_privilege_user)])
 async def create_message(message: str, client_id: int = -1):
-    send_packet(1, message, client_id) if client_id != -1 else send_packets(1, message)
+    send_packet(Packets.MESSAGE, message, client_id) if client_id != -1 else send_packets(Packets.MESSAGE, message)

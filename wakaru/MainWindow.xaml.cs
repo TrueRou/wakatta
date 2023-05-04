@@ -27,7 +27,6 @@ namespace wakaru
         public MainWindow()
         {
             InitializeComponent();
-            Network.Heartbeat();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

@@ -5,6 +5,7 @@ from sqlalchemy import null
 
 import services
 from app import schedules, models
+from app.packets import Packets
 
 online_clients: List[int] = []
 client_data: dict[int, dict] = {}
@@ -48,4 +49,4 @@ async def update_subscription():
             client_id = client.id
             await schedules.apply_schedule(client.subscribe_schedule_id, client_id)
             if client_id in online_clients:
-                send_packet(1, '', client_id)
+                send_packet(Packets.REFRESH_SCHEDULE, '', client_id)
