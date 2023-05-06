@@ -41,12 +41,13 @@ namespace wakaru.Online
             if (WakattaClient.CurrentClient?.Classes != null)
             {
                 ClassList.Clear();
-                await ScheduleManager.ResetScheduler();
+                await ScheduleManager.ResetRingScheduler();
                 foreach (var clazz in WakattaClient.CurrentClient.Classes)
                 {
                     ClassList.Add(clazz);
                     await clazz.ScheduleJobs();
                 }
+
             }
         }
     }

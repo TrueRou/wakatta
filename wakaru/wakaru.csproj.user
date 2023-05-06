@@ -7,13 +7,13 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Online\WakattaClass.xaml.cs">
+    <Compile Update="Views\OnlinePanel.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ProfilePanel.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\SchedulePanel.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\RingstonePanel.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\StatusPanel.xaml.cs">
@@ -24,13 +24,13 @@
     <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Online\WakattaClass.xaml">
+    <Page Update="Views\OnlinePanel.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ProfilePanel.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\SchedulePanel.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\RingstonePanel.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\StatusPanel.xaml">

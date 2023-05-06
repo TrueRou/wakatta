@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using wakaru.Online;
 
 namespace wakaru.Views
 {
@@ -20,9 +21,39 @@ namespace wakaru.Views
     /// </summary>
     public partial class StatusPanel : UserControl
     {
+        public enum Status
+        {
+            IDLE, IN_CLASS, CLASS_OVER
+        }
+
+        private static StatusPanel? Instance;
         public StatusPanel()
         {
+            Instance = this;
             InitializeComponent();
+        }
+
+
+        public static void UpdateStatus(Status status)
+        {
+            Instance?.Dispatcher.BeginInvoke(new Action(() => 
+            {
+                if (status == Status.IDLE)
+                {
+                    Instance.Label.Text = "闲置";
+                    Instance.Icon.Kind = MaterialDesignThemes.Wpf.PackIconKind.PowerSleep;
+                }
+                if (status == Status.IN_CLASS)
+                {
+                    Instance.Label.Text = "上课";
+                    Instance.Icon.Kind = MaterialDesignThemes.Wpf.PackIconKind.BookOpenPageVariant;
+                }
+                if (status == Status.CLASS_OVER)
+                {
+                    Instance.Label.Text = "下课";
+                    Instance.Icon.Kind = MaterialDesignThemes.Wpf.PackIconKind.ShoeSneaker;
+                }
+            }));
         }
     }
 }

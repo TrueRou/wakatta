@@ -16,13 +16,14 @@ random = RandomNicknames()
 
 
 @client_router.put('', response_model=schemas.Client)
-async def put_client(hardware_id: str):
+async def put_client(hardware_id: str, version: str):
     async with db_session() as session:
         client = await services.select_model(session, models.Client, models.Client.hardware_id == hardware_id)
         if client is None:
             identifier = random.random_nick(gender='f')
-            client = models.Client(hardware_id=hardware_id, identifier=identifier)
+            client = models.Client(hardware_id=hardware_id, identifier=identifier, version=version)
             await services.add_model(session, client)
+        client.version = version
         tick_client(client.id)
         return client
 

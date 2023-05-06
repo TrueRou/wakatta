@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace wakaru.Views
 {
     /// <summary>
-    /// RingstonePanel.xaml 的交互逻辑
+    /// OnlinePanel.xaml 的交互逻辑
     /// </summary>
-    public partial class RingstonePanel : UserControl
+    public partial class OnlinePanel : UserControl
     {
-        public RingstonePanel()
+        public OnlinePanel()
         {
             InitializeComponent();
         }

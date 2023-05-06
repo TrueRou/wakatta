@@ -3,10 +3,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:wakaru.Online"
+             xmlns:local="clr-namespace:wakaru.Online" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="312" d:DesignWidth="356" Background="White">
     <Grid>
+        <ListView>
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:WakattaClass}">
+                    <DockPanel>
+                        <materialDesign:PackIcon Margin="0 1 5 0" Kind="Book" />
+                        <TextBlock Text="{Binding Label}" HorizontalAlignment="Center"></TextBlock>
+                        <Separator Visibility="Hidden" Width="20"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <materialDesign:Chip Content="{Binding TimeString}" Padding="0" Margin="0" Height="20"></materialDesign:Chip>
+                            <materialDesign:Chip Content="{Binding TimeDurationString}" Padding="0" Margin="0" Height="20"></materialDesign:Chip>
+                        </StackPanel>
+                    </DockPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListViewItem>
+                <DockPanel HorizontalAlignment="Center">
+                    <materialDesign:PackIcon Margin="0 1 5 0" Kind="Book" />
+                    <TextBlock HorizontalAlignment="Center">数学课</TextBlock>
+                    <Separator Visibility="Hidden" Width="20"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <materialDesign:Chip Padding="0" Margin="0" Height="20">22:40 - 23:40</materialDesign:Chip>
+                        <materialDesign:Chip Padding="0" Margin="0" Height="20">60分钟</materialDesign:Chip>
+                    </StackPanel>
+                </DockPanel>
+            </ListViewItem>
+        </ListView>
     
     </Grid>
 </UserControl>
