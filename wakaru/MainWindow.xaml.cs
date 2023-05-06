@@ -14,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using wakaru.Online;
+using wakaru.Quartz;
 
 namespace wakaru
 {
@@ -27,6 +29,12 @@ namespace wakaru
         public MainWindow()
         {
             InitializeComponent();
+            Task.Run(async () => 
+            {
+                await ScheduleManager.CreateScheduler();
+                await WakattaClient.Create();
+            });
+            
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

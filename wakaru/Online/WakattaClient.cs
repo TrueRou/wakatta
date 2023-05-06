@@ -32,7 +32,7 @@ namespace wakaru.Online
         public static async Task Create()
         {
             var hardwareId = Configuration.Instance.HardwareID ?? Utils.CreateHardwareID();
-            CurrentClient = await WebClient.GetJsonAsync<WakattaClient>("client", new { hardware_id = hardwareId, version=Version });
+            CurrentClient = await WebClient.GetJsonAsync<WakattaClient>("client/create", new { hardware_id = hardwareId, version=Version });
             await ScheduleManager.ResetClientScheduler();
             await WakattaHeartbeat.ScheduleJob();
             await (CurrentClient?.RefreshClasses() ?? Task.CompletedTask);

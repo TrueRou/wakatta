@@ -15,8 +15,8 @@ client_router = APIRouter(prefix='/client', tags=['client'])
 random = RandomNicknames()
 
 
-@client_router.put('', response_model=schemas.Client)
-async def put_client(hardware_id: str, version: str):
+@client_router.get('/create', response_model=schemas.Client)
+async def create_client(hardware_id: str, version: str):
     async with db_session() as session:
         client = await services.select_model(session, models.Client, models.Client.hardware_id == hardware_id)
         if client is None:
@@ -41,7 +41,7 @@ async def heartbeat_client(client_id: int):
     return list(client_packets[client_id].queue)
 
 
-@client_router.get('', response_model=schemas.Client, dependencies=[Depends(current_privilege_user)])
+@client_router.get('', response_model=schemas.Client)
 async def get_client(client_id: int):
     async with db_session() as session:
         return await services.get_model(session, client_id, models.Client)
