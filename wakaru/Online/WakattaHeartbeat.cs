@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using wakaru.Quartz;
 
 namespace wakaru.Online
@@ -43,7 +44,8 @@ namespace wakaru.Online
         {
             if (WakattaClient.CurrentClient != null)
             {
-                var packets = await WakattaClient.WebClient.GetJsonAsync<List<HeartbeatPacket>>("client/heartbeat", new { client_id = WakattaClient.CurrentClient.Id });
+                using var client = WakattaClient.CreateWebClient();
+                var packets = await client.GetJsonAsync<List<HeartbeatPacket>>("client/heartbeat", new { client_id = WakattaClient.CurrentClient.Id });
                 if (packets != null)
                 {
                     foreach (var item in packets)

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using wakaru.Quartz;
 
 namespace wakaru.Online
@@ -15,7 +16,6 @@ namespace wakaru.Online
     {
         public static WakattaClient? CurrentClient;
 
-        public readonly static RestClient WebClient = new(Configuration.Instance.APIUrl, configureSerialization: s => s.UseNewtonsoftJson());
         private readonly static string Version = "wakaru 1.0.0 (.net6.0 Windows)";
 
         [JsonProperty(PropertyName = "id")]
@@ -29,18 +29,24 @@ namespace wakaru.Online
         [JsonProperty(PropertyName = "classes")]
         public List<WakattaClass>? Classes { get; set; }
 
+        public static RestClient CreateWebClient() 
+        {
+            return new RestClient(Configuration.Instance.APIUrl, configureSerialization: s => s.UseNewtonsoftJson());
+        }
+
         public static async Task Create()
         {
+            using var client = CreateWebClient();
             var hardwareId = Configuration.Instance.HardwareID ?? Utils.CreateHardwareID();
-            CurrentClient = await WebClient.GetJsonAsync<WakattaClient>("client/create", new { hardware_id = hardwareId, version=Version });
-            await ScheduleManager.ResetClientScheduler();
+            CurrentClient = await client.GetJsonAsync<WakattaClient>("client/create", new { hardware_id = hardwareId, version = Version }).ConfigureAwait(false);
             await WakattaHeartbeat.ScheduleJob();
             await (CurrentClient?.RefreshClasses() ?? Task.CompletedTask);
         }
 
         public async Task RefreshClasses()
         {
-            Classes = await WebClient.GetJsonAsync<List<WakattaClass>>("client", new { client_id = Id });
+            using var client = CreateWebClient();
+            Classes = await client.GetJsonAsync<List<WakattaClass>>("client/class", new { client_id = Id });
             await (WakattaSchedule.Instance?.Refresh() ?? Task.CompletedTask);
         }
     }

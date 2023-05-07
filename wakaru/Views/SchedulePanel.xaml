@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="312" d:DesignWidth="356" Background="White">
     <Grid>
-        <ListView>
+        <ListView Name="SchedulerListView">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:WakattaClass}">
                     <DockPanel>
@@ -21,6 +21,7 @@
                     </DockPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
+            <!--
             <ListViewItem>
                 <DockPanel HorizontalAlignment="Center">
                     <materialDesign:PackIcon Margin="0 1 5 0" Kind="Book" />
@@ -32,6 +33,7 @@
                     </StackPanel>
                 </DockPanel>
             </ListViewItem>
+            -->
         </ListView>
     
     </Grid>

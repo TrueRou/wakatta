@@ -27,12 +27,13 @@ def tick_client(client_id: int):
     if client_id not in online_clients:
         client_data[client_id] = dict()
         client_packets[client_id] = queue.Queue()
+        online_clients.append(client_id)
     client_data[client_id]['last_activity'] = datetime.now()
 
 
 def send_packet(packet_id: int, payload: str, client_id: int):
     client_packets[client_id].put({
-        'packet_id': packet_id,
+        'packet_id': int(packet_id),
         'payload': payload
     })
 

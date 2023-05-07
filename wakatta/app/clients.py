@@ -5,7 +5,7 @@ from random_words import RandomNicknames
 from starlette import status
 
 import services
-from app import models, schemas
+from app import models, schemas, packets
 from app.packets import Packets
 from app.session import tick_client, client_packets, send_packet, send_packets
 from app.users import current_privilege_user
@@ -13,6 +13,10 @@ from services import db_session
 
 client_router = APIRouter(prefix='/client', tags=['client'])
 random = RandomNicknames()
+
+
+def _notify_client(client_id: int):
+    send_packet(Packets.REFRESH_SCHEDULE, '', client_id)
 
 
 @client_router.get('/create', response_model=schemas.Client)
@@ -38,7 +42,11 @@ async def get_classes(client_id: int):
 @client_router.get('/heartbeat')
 async def heartbeat_client(client_id: int):
     tick_client(client_id)
-    return list(client_packets[client_id].queue)
+    queue = client_packets[client_id]
+    result = []
+    while not queue.empty():
+        result.append(queue.get())
+    return result
 
 
 @client_router.get('', response_model=schemas.Client)
@@ -64,8 +72,10 @@ async def get_class(client_id: int):
 async def create_class(client_id: int, form: schemas.ClassBase):
     async with db_session() as session:
         await services.get_model(session, client_id, models.Client)
-        clazz = models.Class(label=form.label, time_hour=form.time_hour, time_minute=form.time_minute, client_id=client_id)
+        clazz = models.Class(label=form.label, time_hour=form.time_hour, time_minute=form.time_minute,
+                             client_id=client_id)
         await services.add_model(session, clazz)
+        _notify_client(client_id)
         return clazz
 
 
@@ -74,12 +84,15 @@ async def patch_class(class_id: int, form: schemas.ClassUpdate):
     async with db_session() as session:
         clazz = await services.get_model(session, class_id, models.Class)
         await services.partial_update(session, clazz, form)
+        _notify_client(clazz.client_id)
         return clazz
 
 
 @client_router.delete('/class', status_code=status.HTTP_200_OK, dependencies=[Depends(current_privilege_user)])
 async def delete_class(class_id: int):
     async with db_session() as session:
+        clazz = await services.get_model(session, class_id, models.Class)
+        _notify_client(clazz.client_id)
         await services.delete_model(session, class_id, models.Class)
 
 

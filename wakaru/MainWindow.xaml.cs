@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,12 +30,10 @@ namespace wakaru
         public MainWindow()
         {
             InitializeComponent();
-            Task.Run(async () => 
-            {
+            Task.Run(async () => {
                 await ScheduleManager.CreateScheduler();
                 await WakattaClient.Create();
             });
-            
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

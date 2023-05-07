@@ -35,6 +35,8 @@ namespace wakaru.Views
                     TimeInterval.Text = new TimeSpan(OverDateTime.Ticks - DateTime.Now.Ticks).ToString(@"hh\:mm\:ss");
                 }));
             });
+            ClearTime();
+            dispatcherTimer.Start();
         }
 
         public static void UpdateTime(int hour, int minute, int duration)

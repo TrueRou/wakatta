@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -34,20 +35,27 @@ namespace wakaru.Online
         {
             Instance = this;
             InitializeComponent();
+            SchedulerListView.ItemsSource = ClassList;
         }
 
         public async Task Refresh()
         {
             if (WakattaClient.CurrentClient?.Classes != null)
             {
-                ClassList.Clear();
-                await ScheduleManager.ResetRingScheduler();
+                await ScheduleManager.ResetGroup("ring");
                 foreach (var clazz in WakattaClient.CurrentClient.Classes)
                 {
-                    ClassList.Add(clazz);
                     await clazz.ScheduleJobs();
                 }
-
+                Instance?.Dispatcher.Invoke(() =>
+                {
+                    ClassList.Clear();
+                    foreach (var clazz in WakattaClient.CurrentClient.Classes)
+                    {
+                        ClassList.Add(clazz);
+                    }
+                    SchedulerListView.ItemsSource = ClassList;
+                });
             }
         }
     }
