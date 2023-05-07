@@ -36,6 +36,7 @@ namespace wakaru.Online
             Instance = this;
             InitializeComponent();
             SchedulerListView.ItemsSource = ClassList;
+            SetSelectedIndex(Utils.IndexClass(ClassList));
         }
 
         public async Task Refresh()
@@ -57,6 +58,15 @@ namespace wakaru.Online
                     SchedulerListView.ItemsSource = ClassList;
                 });
             }
+        }
+
+        public static void SetSelectedIndex(int index) 
+        {
+            Instance?.Dispatcher.Invoke(() =>
+            {
+                if (index != -1)
+                    Instance.SchedulerListView.SelectedItem = WakattaClient.CurrentClient?.Classes?[index];
+            });
         }
     }
 }

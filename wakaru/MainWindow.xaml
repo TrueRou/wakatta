@@ -84,7 +84,7 @@
                                     <Grid.Clip>
                                         <EllipseGeometry Center="25 25" RadiusX="25" RadiusY="25"></EllipseGeometry>
                                     </Grid.Clip>
-                                    <Image Source="https://s4.ax1x.com/2022/02/07/HMDVL8.png" ></Image>
+                                    <Image RenderOptions.BitmapScalingMode="HighQuality"  Source="https://a.ppy.sb/1094" ></Image>
                                 </Grid>
                                 <StackPanel Margin="5">
                                     <TextBlock FontSize="14">开发者</TextBlock>

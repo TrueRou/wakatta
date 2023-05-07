@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,8 +22,10 @@ namespace wakaru
             return datetime.AddMinutes(delay);
         }
 
-        public static int IndexClass(List<WakattaClass> classes, int hour, int minute)
+        public static int IndexClass(IList<WakattaClass> classes)
         {
+            var hour = DateTime.Now.Hour;
+            var minute = DateTime.Now.Minute;
             var totalMinutes = hour * 60 + minute;
             for (var i = 0; i < classes.Count; i++)
             {
@@ -38,7 +41,7 @@ namespace wakaru
         {
             var current = CreateDatetime(hour, minute);
             var delayed = DelayDatetime(hour, minute, period);
-            return string.Format("{0:hh:mm}", current) + " - " + string.Format("{0:hh:mm}", delayed);
+            return string.Format("{0:HH:mm}", current) + " - " + string.Format("{0:HH:mm}", delayed);
         }
 
         public static string CreateHardwareID()

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using wakaru.Online;
 
 namespace wakaru.Views
 {
@@ -20,9 +21,28 @@ namespace wakaru.Views
     /// </summary>
     public partial class OnlinePanel : UserControl
     {
+        private static OnlinePanel? Instance;
         public OnlinePanel()
         {
+            Instance = this;
             InitializeComponent();
         }
+
+        public static void UpdateStatus()
+        {
+            var client = WakattaClient.CurrentClient;
+            if (client == null) return;
+            Instance?.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Instance.TextClientName.Text = client.Identifier;
+                Instance.TextBeginRingtone.Text = client.ClassBeginRingtone.Replace(".wav", "");
+                Instance.TextOverRingtone.Text = client.ClassOverRingtone.Replace(".wav", "");
+                if (client.SubscribeSchedule != null)
+                    Instance.TextSubscribeSchedule.Text = client.SubscribeSchedule.Label;
+                else
+                    Instance.TextSubscribeSchedule.Text = "未订阅";
+            }));
+        }
+
     }
 }

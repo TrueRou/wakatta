@@ -49,6 +49,7 @@ namespace wakaru.Views
                 Instance.TimeNext.Visibility = Visibility.Visible;
                 Instance.TimeInterval.Visibility = Visibility.Visible;
                 OverDateTime = Utils.DelayDatetime(hour, minute, duration);
+                Instance.TimeNext.Text = OverDateTime.ToString();
             }));
         }
 

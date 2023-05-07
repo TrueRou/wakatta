@@ -17,7 +17,7 @@
         <div class="m-5">
             <el-row :gutter="20">
                 <el-col :span="12">
-                    <el-descriptions border="true" direction="horizontal" column="1" title="客户端信息">
+                    <el-descriptions :border="true" direction="horizontal" :column="1" title="客户端信息">
                         <el-descriptions-item label="名称">{{ clientData.identifier }}</el-descriptions-item>
                         <el-descriptions-item label="ID">{{ clientData.id }}</el-descriptions-item>
                         <el-descriptions-item
@@ -42,7 +42,7 @@
         <div class="m-5 w-full">
             <el-tabs>
                 <el-tab-pane label="总览">
-                    <el-descriptions class="w-1/2" direction="horizontal" column="1">
+                    <el-descriptions class="w-1/2" direction="horizontal" :column="1">
                         <el-descriptions-item label="名称">{{ clientData.identifier }}</el-descriptions-item>
                         <el-descriptions-item label="ID">{{ clientData.id }}</el-descriptions-item>
                         <el-descriptions-item
@@ -66,7 +66,7 @@
                         <el-button type="primary" @click="createClass()">新建</el-button>
                         <el-button type="danger" class="ml-2">全部删除</el-button>
                     </div>
-                    <el-table class="w-full" border :data="clientData.classes">
+                    <el-table class="w-full" :border="true" :data="clientData.classes">
                         <el-table-column prop="id" label="ID" width="80" />
                         <el-table-column prop="label" label="课程" width="100" />
                         <el-table-column prop="name" label="时间" />
@@ -85,7 +85,7 @@
                         <el-button>管理订阅</el-button>
                         <el-button type="danger">取消订阅</el-button>
                     </div>
-                    <el-table border :data="tableData" style="width: 100%">
+                    <el-table :border="true" :data="tableData" style="width: 100%">
                         <el-table-column prop="date" label="Date" width="180" />
                         <el-table-column prop="name" label="Name" width="180" />
                         <el-table-column prop="address" label="Address" />
@@ -153,9 +153,9 @@ import config from '../config'
 
 const clientData = ref({})
 const dialogClassEditing = ref(false)
-const dataClassEditing = ref(false)
+const dataClassEditing = ref({})
 const dialogClassCreating = ref(false)
-const dataClassCreating = ref(false)
+const dataClassCreating = ref({})
 const formClassCreating = ref()
 const formClassEditing = ref()
 
@@ -202,10 +202,11 @@ const createClassSubmit = async () =>
 
 const editClassSubmit = async () =>
 {
-    await formClassCreating.value.validate((valid, fields) =>
+    await formClassEditing.value.validate(async (valid, fields) =>
     {
         if (valid)
         {
+            await axios.patch(config.API_CLIENT_CLASS + `?class_id=${dataClassEditing.value.id}`, dataClassEditing.value, userStore.getAuthorizedHeader())
             dialogClassEditing.value = false;
         }
     })

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using wakaru.Online;
@@ -30,9 +31,8 @@ namespace wakaru.Quartz
             int duration = (int)context.MergedJobDataMap.Get("duration");
             if (WakattaClient.CurrentClient != null)
             {
-                PlaySound(WakattaClient.CurrentClient.ClassBeginRingtone);
-                StatusPanel.UpdateStatus(StatusPanel.Status.IN_CLASS);
-                ProfilePanel.UpdateTime(hour, minute, duration);
+                //PlaySound(WakattaClient.CurrentClient.ClassBeginRingtone);
+                WakattaClient.ApplyStatus();
             } 
             return Task.CompletedTask;
         }
@@ -44,9 +44,10 @@ namespace wakaru.Quartz
         {
             if (WakattaClient.CurrentClient != null)
             {
-                PlaySound(WakattaClient.CurrentClient.ClassOverRingtone);
+                //PlaySound(WakattaClient.CurrentClient.ClassOverRingtone);
                 StatusPanel.UpdateStatus(StatusPanel.Status.CLASS_OVER);
                 ProfilePanel.ClearTime();
+                WakattaSchedule.SetSelectedIndex(-1);
             }
             return Task.CompletedTask;
         }

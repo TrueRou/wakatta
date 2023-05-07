@@ -17,7 +17,7 @@
         <div class="m-5">
             <el-row :gutter="20">
                 <el-col :span="12">
-                    <el-descriptions border="true" direction="horizontal" column="1" title="日程信息">
+                    <el-descriptions :border="true" direction="horizontal" :column="1" title="日程信息">
                         <el-descriptions-item label="名称">{{ scheduleData.label }}</el-descriptions-item>
                         <el-descriptions-item label="ID">{{ scheduleData.id }}</el-descriptions-item>
                         <el-descriptions-item label="总课程数">{{ scheduleData.classes != null ? scheduleData.classes.length : 0
@@ -38,19 +38,14 @@
                 <el-tabs>
                     <el-tab-pane label="课程">
                         <div class="flex mb-3">
-                            <el-select v-model="filterDay" size="large" @change="refreshClasses">
-                                <el-option label="星期一" value="1"></el-option>
-                                <el-option label="星期二" value="2"></el-option>
-                                <el-option label="星期三" value="3"></el-option>
-                                <el-option label="星期四" value="4"></el-option>
-                                <el-option label="星期五" value="5"></el-option>
-                                <el-option label="星期六" value="6"></el-option>
-                                <el-option label="星期日" value="0"></el-option>
+                            <el-select class=" w-28" v-model="filterDay" @change="refreshClasses">
+                                <el-option v-for="weekday in weekdayList" :label="weekday.label" :value="weekday.value">
+                                </el-option>
                             </el-select>
-                            <el-button type="primary" @click="createClass()">新建</el-button>
+                            <el-button type="primary" class="ml-2" @click="createClass()">新建</el-button>
                             <el-button type="danger" class="ml-2">全部删除</el-button>
                         </div>
-                        <el-table class="w-full" border :data="clientData.classes">
+                        <el-table class="w-full" :border="true" :data="currentClasses">
                             <el-table-column prop="id" label="ID" width="80" />
                             <el-table-column prop="label" label="课程" width="100" />
                             <el-table-column prop="name" label="时间" />
@@ -73,6 +68,64 @@
             </div>
         </div>
     </div>
+    <el-dialog width="500" title="创建课程" v-model="dialogClassCreating">
+        <el-form :model="dataClassCreating" :rules="formRules" label-width="100px" label-position="left"
+            ref="formClassCreating">
+            <el-form-item label="课程名称" prop="label">
+                <el-input placeholder="数学" v-model="dataClassCreating.label" />
+            </el-form-item>
+            <el-form-item label="时间" prop="time">
+                <el-input-number placeholder="6" v-model="dataClassCreating.time_hour" :min="0" :max="24" />
+                <span class="text-lg ml-2 mr-2"> : </span>
+                <el-input-number placeholder="40" v-model="dataClassCreating.time_minute" :min="0" :max="60" />
+            </el-form-item>
+            <el-form-item label="时长" prop="duration">
+                <el-input-number placeholder="60" v-model="dataClassCreating.time_duration" :min="1" />
+            </el-form-item>
+            <el-form-item label="星期" prop="weekday">
+                <el-select class=" w-28" v-model="dataClassCreating.weekday">
+                    <el-option v-for="weekday in weekdayList" :label="weekday.label" :value="weekday.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <span>
+                <el-button type="primary" @click="createClassSubmit()">
+                    确定
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
+    <el-dialog width="500" title="编辑课程" v-model="dialogClassEditing">
+        <el-form :model="dataClassEditing" :rules="formRules" label-width="100px" label-position="left"
+            ref="formClassEditing">
+            <el-form-item label="课程名称" prop="label">
+                <el-input placeholder="数学" v-model="dataClassEditing.label" />
+            </el-form-item>
+            <el-form-item label="时间" prop="time">
+                <el-input-number placeholder="6" v-model="dataClassEditing.time_hour" :min="0" :max="24" />
+                <span class="text-lg ml-2 mr-2"> : </span>
+                <el-input-number placeholder="40" v-model="dataClassEditing.time_minute" :min="0" :max="60" />
+            </el-form-item>
+            <el-form-item label="时长" prop="duration">
+                <el-input-number placeholder="60" v-model="dataClassEditing.time_duration" :min="1" />
+            </el-form-item>
+            <el-form-item label="星期" prop="weekday">
+                <el-select class=" w-28" v-model="dataClassEditing.weekday">
+                    <el-option v-for="weekday in weekdayList" :label="weekday.label" :value="weekday.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <span>
+                <el-button type="primary" @click="editClassSubmit()">
+                    确定
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
 </template>
 
 <script setup>
@@ -83,8 +136,50 @@ import axios from 'axios';
 import { useUserStore } from '../stores/UserStore';
 
 const scheduleData = ref({})
-const currentClasses = ref({})
-const filterDay = ref(new Date().getDay())
+const weekdayList = [
+    {
+        "label": "星期一",
+        "value": "1",
+    },
+    {
+        "label": "星期二",
+        "value": "2",
+    },
+    {
+        "label": "星期三",
+        "value": "3",
+    },
+    {
+        "label": "星期四",
+        "value": "4",
+    },
+    {
+        "label": "星期五",
+        "value": "5",
+    },
+    {
+        "label": "星期六",
+        "value": "6",
+    },
+    {
+        "label": "星期日",
+        "value": "0",
+    },
+]
+const filterDay = ref(new Date().getDay().toString())
+
+const formRules = {
+    label: [{ required: true, message: '请填写课程名称', trigger: 'blur' },],
+}
+
+const currentClasses = ref()
+
+const dialogClassCreating = ref(false)
+const dataClassCreating = ref({})
+const formClassCreating = ref()
+const dialogClassEditing = ref(false)
+const dataClassEditing = ref({})
+const formClassEditing = ref()
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -99,25 +194,53 @@ const refreshSchedule = async () =>
     await refreshClasses()
 }
 
+const createClass = () =>
+{
+    dialogClassCreating.value = true;
+    dataClassCreating.value = { weekday: filterDay.value }
+}
+
+const createClassSubmit = async () =>
+{
+    await formClassCreating.value.validate(async (valid) =>
+    {
+        if (valid)
+        {
+            await axios.post(config.API_SCHEDULE_CLASS + `?schedule_id=${scheduleData.value.id}`, dataClassCreating.value, userStore.getAuthorizedHeader())
+            dialogClassCreating.value = false;
+            await refreshSchedule()
+        }
+    })
+}
+
+const editClassSubmit = async () =>
+{
+    await formClassCreating.value.validate(async (valid, fields) =>
+    {
+        if (valid)
+        {
+            await axios.patch(config.API_SCHEDULE_CLASS + `?schedule_id=${scheduleData.value.id}`, dataClassEditing.value, userStore.getAuthorizedHeader())
+            dialogClassEditing.value = false;
+        }
+    })
+}
+
+const editClass = (clazz) =>
+{
+    dialogClassEditing.value = true
+    dataClassEditing.value = clazz
+}
+
 const refreshClasses = async () =>
 {
-    const response = await axios.get(config.API_SCHEDULE_CLASS + `?schedule_id=${scheduleData.value.id}&weekday=${filterDay}`, userStore.getAuthorizedHeader())
+    const response = await axios.get(config.API_SCHEDULE_CLASS + `?schedule_id=${scheduleData.value.id}&weekday=${filterDay.value}`, userStore.getAuthorizedHeader())
     currentClasses.value = response.data
 }
 
-const createClass = async () =>
+const removeClass = async (id) =>
 {
-
-}
-
-const editClass = async () =>
-{
-
-}
-
-const removeClass = async () =>
-{
-
+    await axios.delete(config.API_SCHEDULE_CLASS + `?class_id=${id}`, userStore.getAuthorizedHeader())
+    await refreshSchedule()
 }
 
 onMounted(async () => await refreshSchedule())

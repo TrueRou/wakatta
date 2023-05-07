@@ -70,7 +70,7 @@ async def create_schedule_class(schedule_id: int, form: schemas.ScheduleClassBas
         await services.get_model(session, schedule_id, models.Schedule)
         clazz = models.ScheduleClass(label=form.label, time_hour=form.time_hour, time_minute=form.time_minute,
                                      schedule_id=schedule_id,
-                                     time_duration=form.time_duration)
+                                     time_duration=form.time_duration, weekday=form.weekday)
         await services.add_model(session, clazz)
         await _broadcast_schedule(schedule_id)
         return clazz
