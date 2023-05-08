@@ -27,10 +27,11 @@ def tick_client(client_id: int):
 
 
 def send_packet(packet_id: int, payload: str, client_id: int):
-    client_packets[client_id].put({
-        'packet_id': int(packet_id),
-        'payload': payload
-    })
+    if client_id in client_packets:
+        client_packets[client_id].put({
+            'packet_id': int(packet_id),
+            'payload': payload
+        })
 
 
 def send_packets(packet_id: int, payload: str):

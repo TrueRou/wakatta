@@ -20,8 +20,7 @@
                     <el-descriptions :border="true" direction="horizontal" :column="1" title="客户端信息">
                         <el-descriptions-item label="名称">{{ clientData.identifier }}</el-descriptions-item>
                         <el-descriptions-item label="ID">{{ clientData.id }}</el-descriptions-item>
-                        <el-descriptions-item
-                            label="Hardware ID">f6d9b713-31a0-41bb-9360-927e11a81786</el-descriptions-item>
+                        <el-descriptions-item label="订阅日程表">{{ subscriptionLabel }}</el-descriptions-item>
                         <el-descriptions-item label="状态">
                             <el-tag size="small" class="mr-2" type="success">在线</el-tag>
                             <el-tag size="small">打铃中</el-tag>
@@ -56,7 +55,8 @@
                             {{ clientData.class_over_ringtone_filename }}
                         </el-descriptions-item>
                         <el-descriptions-item label="订阅日程表">
-                            {{ clientData.subscribe_schedule_id == null ? "未订阅" : clientData.subscribe_schedule_id }}
+                            {{ clientData.subscribe_schedule_id == null ? "未订阅" : subscriptionLabel +
+                                `(ID: ${clientData.subscribe_schedule_id})` }}
                         </el-descriptions-item>
                     </el-descriptions>
                 </el-tab-pane>
@@ -79,14 +79,15 @@
                 </el-tab-pane>
                 <el-tab-pane label="订阅">
                     <div class="flex mb-3">
-                        <el-button type="primary">修改订阅</el-button>
-                        <el-button>管理订阅</el-button>
-                        <el-button type="danger">取消订阅</el-button>
+                        <el-button type="primary" @click="editSubscription()">修改订阅</el-button>
+                        <el-button @click="jumpSubscription()">管理订阅</el-button>
+                        <el-button type="danger" @click="removeSubscription()">取消订阅</el-button>
                     </div>
-                    <el-table :border="true" :data="tableData" style="width: 100%">
-                        <el-table-column prop="date" label="Date" width="180" />
-                        <el-table-column prop="name" label="Name" width="180" />
-                        <el-table-column prop="address" label="Address" />
+                    <el-table class="w-full" :border="true" :data="clientData.subscribe_schedule?.classes">
+                        <el-table-column type="index" label="序号" width="80" />
+                        <el-table-column prop="label" label="课程" width="100" />
+                        <el-table-column prop="weekday" label="星期" width="100" />
+                        <el-table-column prop="name" label="时间" />
                     </el-table>
                 </el-tab-pane>
                 <el-tab-pane label="提醒"></el-tab-pane>
@@ -140,14 +141,32 @@
             </span>
         </template>
     </el-dialog>
+    <el-dialog width="500" title="修改订阅" v-model="dialogSubscription">
+        <el-form :model="clientData" label-width="100px" label-position="left" ref="formSubscription">
+            <el-form-item label="日程表" prop="schedule">
+                <el-select v-model="clientData.subscribe_schedule_id">
+                    <el-option v-for="schedule in dataStore.schedules" :value="schedule.id"
+                        :label="schedule.label"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <span>
+                <el-button type="primary" @click="editClientSubmit()">
+                    确定
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useUserStore } from '../stores/UserStore'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import config from '../config'
+import { useDataStore } from '../stores/DataStore'
 
 const clientData = ref({})
 const dialogClassEditing = ref(false)
@@ -156,8 +175,11 @@ const dialogClassCreating = ref(false)
 const dataClassCreating = ref({})
 const formClassCreating = ref()
 const formClassEditing = ref()
+const dialogSubscription = ref(false)
+const formSubscription = ref()
 
 const userStore = useUserStore()
+const dataStore = useDataStore()
 const router = useRouter()
 
 const formRules = {
@@ -180,6 +202,11 @@ const editClass = (clazz) =>
     dataClassEditing.value = clazz
 }
 
+const editSubscription = () =>
+{
+    dialogSubscription.value = true
+}
+
 const createClass = () =>
 {
     dialogClassCreating.value = true;
@@ -199,6 +226,16 @@ const createClassSubmit = async () =>
     })
 }
 
+const editClientSubmit = async () =>
+{
+    const data = {
+        "subscribe_schedule_id": clientData.value.subscribe_schedule_id
+    }
+    await axios.patch(config.API_CLIENT + `?client_id=${clientData.value.id}`, data, userStore.getAuthorizedHeader())
+    dialogSubscription.value = false;
+    await refreshClient()
+}
+
 const editClassSubmit = async () =>
 {
     await formClassEditing.value.validate(async (valid, fields) =>
@@ -207,6 +244,7 @@ const editClassSubmit = async () =>
         {
             await axios.patch(config.API_CLIENT_CLASS + `?class_id=${dataClassEditing.value.id}`, dataClassEditing.value, userStore.getAuthorizedHeader())
             dialogClassEditing.value = false;
+            await refreshClient()
         }
     })
 }
@@ -216,6 +254,31 @@ const removeClass = async (id) =>
     await axios.delete(config.API_CLIENT_CLASS + `?class_id=${id}`, userStore.getAuthorizedHeader())
     await refreshClient()
 }
+
+const removeSubscription = async () =>
+{
+    await axios.delete(config.API_CLIENT_SUBSCRIPTION + `?client_id=${clientData.value.id}`, userStore.getAuthorizedHeader())
+    await refreshClient()
+}
+
+const jumpSubscription = async () =>
+{
+    if (clientData.value.subscribe_schedule != null)
+    {
+        router.push(`/schedule/${clientData.value.subscribe_schedule.id}`)
+    }
+}
+
+const subscriptionLabel = computed(() =>
+{
+    if (clientData.value.subscribe_schedule != null)
+    {
+        return clientData.value.subscribe_schedule.label
+    } else
+    {
+        return "未订阅"
+    }
+})
 
 onMounted(async () => await refreshClient())
 

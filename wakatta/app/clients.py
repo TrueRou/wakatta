@@ -6,7 +6,7 @@ from random_words import RandomNicknames
 from starlette import status
 
 import services
-from app import models, schemas
+from app import models, schemas, schedules
 from app.packets import Packets
 from app.session import tick_client, client_packets, send_packet, send_packets
 from app.users import current_privilege_user
@@ -54,6 +54,26 @@ async def heartbeat_client(client_id: int):
 async def get_client(client_id: int):
     async with db_session() as session:
         return await services.get_model(session, client_id, models.Client)
+
+
+@client_router.patch('', response_model=schemas.Client, dependencies=[Depends(current_privilege_user)])
+async def patch_client(client_id: int, form: schemas.ClientUpdate):
+    async with db_session() as session:
+        client = await services.get_model(session, client_id, models.Client)
+        await services.partial_update(session, client, form)
+        if form.subscribe_schedule_id != client.subscribe_schedule_id:
+            await schedules.apply_schedule(client.subscribe_schedule_id, client_id)
+        _notify_client(client_id)
+        return client
+
+
+@client_router.delete('/subscription', response_model=schemas.Client, dependencies=[Depends(current_privilege_user)])
+async def remove_subscription(client_id: int):
+    async with db_session() as session:
+        client = await services.get_model(session, client_id, models.Client)
+        client.subscribe_schedule_id = None
+        _notify_client(client_id)
+        return client
 
 
 @client_router.get('/all', response_model=List[schemas.Client], dependencies=[Depends(current_privilege_user)])

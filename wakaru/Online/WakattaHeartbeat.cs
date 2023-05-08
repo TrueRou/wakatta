@@ -20,7 +20,8 @@ namespace wakaru.Online
     }
     class WakattaHeartbeat : IJob
     {
-        public static readonly int HeartBeatInterval = 1; 
+        public static readonly int HeartBeatInterval = 1;
+        public static bool Scheduled = false;
         public static async Task HandlePacket(HeartbeatPacket packet)
         {
             switch (packet.PacketId)
@@ -37,7 +38,11 @@ namespace wakaru.Online
 
         public static async Task ScheduleJob()
         {
-            await ScheduleManager.AddClientIntervalJob(JobBuilder.Create<WakattaHeartbeat>().Build(), HeartBeatInterval);
+            if (Scheduled)
+            {
+                await ScheduleManager.AddClientIntervalJob(JobBuilder.Create<WakattaHeartbeat>().Build(), HeartBeatInterval);
+                Scheduled = true;
+            }
         }
 
         public async Task Execute(IJobExecutionContext context)

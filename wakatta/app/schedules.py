@@ -17,7 +17,7 @@ schedule_router = APIRouter(prefix='/schedule', tags=['schedule'], dependencies=
 
 
 def _notify_client(client_id: int):
-    send_packet(Packets.REFRESH_SCHEDULE, '', client_id)
+    send_packet(Packets.RECONNECT, '', client_id)
 
 
 def _get_weekday():
@@ -103,11 +103,10 @@ async def delete_schedule_class(class_id: int):
 async def apply_schedule(schedule_id: int, client_id: int):
     weekday = _get_weekday()
     async with db_session() as session:
-        schedule = await services.get_model(session, schedule_id, models.Schedule)
         client = await services.get_model(session, client_id, models.Client)
         await services.delete_models(session, models.Class, models.Class.client_id == client.id)
-        sentence = schedule.classes.where(models.ScheduleClass.weekday == weekday)
-        classes = await session.scalars(sentence)
+        condition = and_(models.ScheduleClass.weekday == weekday, models.ScheduleClass.schedule_id == schedule_id)
+        classes = await services.select_models(session, models.ScheduleClass, condition)
         for clazz in classes:
             new_clazz = models.Class(label=clazz.label, time_hour=clazz.time_hour, time_minute=clazz.time_minute,
                                      client_id=client.id, time_duration=clazz.time_duration)

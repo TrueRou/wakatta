@@ -48,17 +48,26 @@ class ScheduleBase(ModelBase):
 
 class Schedule(ScheduleBase):
     id: int
-    classes: list[Class]
+    classes: list[ScheduleClass]
 
 
-class Client(ModelBase):
+class ClientBase(ModelBase):
     id: int
     identifier: str
     version: str
+    hardware_id: str
     class_begin_ringtone_filename: str
     class_over_ringtone_filename: str
+    subscribe_schedule_id: Optional[int]
+
+
+class Client(ClientBase):
     subscribe_schedule: Optional[Schedule]
     classes: list[Class]
+
+
+class ClientUpdate(ClientBase):
+    __annotations__ = convert_to_optional(ClientBase)
 
 
 class Statistics(ModelBase):

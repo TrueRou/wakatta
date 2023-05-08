@@ -35,13 +35,6 @@ class Client(Base):
     subscribe_schedule = relationship('Schedule', backref=backref('client', lazy='dynamic'), lazy=False)
 
 
-class Schedule(Base):
-    __tablename__ = "schedule"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    label = Column(String(length=32), nullable=False)
-    classes = relationship('ScheduleClass', backref=backref('schedule', lazy=False), lazy='selectin', uselist=True)
-
-
 class ScheduleClass(Base):
     __tablename__ = "schedule_class"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -51,3 +44,11 @@ class ScheduleClass(Base):
     time_duration = Column(Integer, default=40)
     weekday = Column(Integer)
     schedule_id = Column(Integer, ForeignKey('schedule.id'), index=True)
+
+
+class Schedule(Base):
+    __tablename__ = "schedule"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    label = Column(String(length=32), nullable=False)
+    classes = relationship('ScheduleClass', backref=backref('schedule', lazy=False), lazy='selectin', uselist=True,
+                           order_by=and_(ScheduleClass.weekday, ScheduleClass.time_hour, ScheduleClass.time_minute))

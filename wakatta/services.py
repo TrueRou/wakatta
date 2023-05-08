@@ -37,6 +37,8 @@ async def add_model(session: AsyncSession, obj: V) -> V:
 async def delete_model(session: AsyncSession, ident, model):
     target = await session.get(model, ident)
     await session.delete(target)
+    await session.flush()
+    await session.commit()  # Ensure deletion were operated
 
 
 async def delete_models(session: AsyncSession, obj, condition):
@@ -73,7 +75,8 @@ async def select_model(session: AsyncSession, obj: V, condition, offset=-1, limi
     return model
 
 
-async def select_models(session: AsyncSession, obj: V, condition, offset=-1, limit=-1, order_by=None) -> ScalarResult[V]:
+async def select_models(session: AsyncSession, obj: V, condition, offset=-1, limit=-1, order_by=None) -> ScalarResult[
+    V]:
     sentence = _build_select_sentence(obj, condition, offset, limit, order_by)
     model = await session.scalars(sentence)
     return model
@@ -93,4 +96,3 @@ async def partial_update(session: AsyncSession, item: V, updates) -> V:
     await session.commit()
     await session.refresh(item)
     return item
-
