@@ -66,6 +66,8 @@ namespace wakaru.Online
             {
                 if (index != -1)
                     Instance.SchedulerListView.SelectedItem = WakattaClient.CurrentClient?.Classes?[index];
+                else
+                    Instance.SchedulerListView.SelectedItem = null;
             });
         }
     }

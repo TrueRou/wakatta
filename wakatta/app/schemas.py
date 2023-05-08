@@ -54,6 +54,9 @@ class Schedule(ScheduleBase):
 class Client(ModelBase):
     id: int
     identifier: str
+    version: str
+    class_begin_ringtone_filename: str
+    class_over_ringtone_filename: str
     subscribe_schedule: Optional[Schedule]
     classes: list[Class]
 

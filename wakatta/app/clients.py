@@ -2,10 +2,11 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 from random_words import RandomNicknames
+
 from starlette import status
 
 import services
-from app import models, schemas, packets
+from app import models, schemas
 from app.packets import Packets
 from app.session import tick_client, client_packets, send_packet, send_packets
 from app.users import current_privilege_user
@@ -73,7 +74,7 @@ async def create_class(client_id: int, form: schemas.ClassBase):
     async with db_session() as session:
         await services.get_model(session, client_id, models.Client)
         clazz = models.Class(label=form.label, time_hour=form.time_hour, time_minute=form.time_minute,
-                             client_id=client_id)
+                             client_id=client_id, time_duration=form.time_duration)
         await services.add_model(session, clazz)
         _notify_client(client_id)
         return clazz

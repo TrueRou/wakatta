@@ -20,13 +20,12 @@
             <el-button type="primary" @click="createSchedule">新建日程</el-button>
             <el-button @click="dataStore.refreshSchedules()">刷新</el-button>
         </div>
-        <el-table class="w-full" border :data="dataStore.schedules">
-            <el-table-column prop="id" label="ID" width="80" />
+        <el-table class="w-full" :border="true" :data="dataStore.schedules">
+            <el-table-column type="index" label="序号" width="80" />
             <el-table-column prop="label" label="名称" width="300" />
             <el-table-column label="操作">
                 <template #default="scope">
                     <el-button type="primary" @click="editSchedule(scope.row.id)">编辑</el-button>
-                    <el-button type="info" @click="editSchedule(scope.row.id)">复制</el-button>
                     <el-button type="danger" @click="removeSchedule(scope.row.id)">删除</el-button>
                 </template>
             </el-table-column>

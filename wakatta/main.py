@@ -35,9 +35,9 @@ app.add_middleware(
 @app.on_event("startup")
 async def on_startup():
     await services.create_db_and_tables()
-    await session.update_subscription()  # Apply subscription when startup to ensure lessons of current weekday
+    await schedules.update_subscription()  # Apply subscription when startup to ensure lessons of current weekday
     scheduler.add_job(session.tick_session, 'interval', seconds=1)
-    scheduler.add_job(session.update_subscription, 'cron', hour=0)  # Apply subscription every single day
+    scheduler.add_job(schedules.update_subscription, 'cron', hour=0)  # Apply subscription every single day
     scheduler.start()
 
 

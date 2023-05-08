@@ -46,13 +46,12 @@
                             <el-button type="danger" class="ml-2">全部删除</el-button>
                         </div>
                         <el-table class="w-full" :border="true" :data="currentClasses">
-                            <el-table-column prop="id" label="ID" width="80" />
+                            <el-table-column type="index" label="序号" width="80" />
                             <el-table-column prop="label" label="课程" width="100" />
                             <el-table-column prop="name" label="时间" />
                             <el-table-column label="操作" width="240">
                                 <template #default="scope">
                                     <el-button type="primary" @click="editClass(scope.row)">编辑</el-button>
-                                    <el-button type="info" @click="editClass(scope.row)">复制</el-button>
                                     <el-button type="danger" @click="removeClass(scope.row.id)">删除</el-button>
                                 </template>
                             </el-table-column>

@@ -24,7 +24,7 @@ namespace wakaru.Online
         {
             var overTime = Utils.DelayDatetime(TimeHour, TimeMinute, TimeDuration);
             await ScheduleManager.AddRingCornJob(JobBuilder.Create<ClassBeginRingJob>().UsingJobData("duration", TimeDuration).UsingJobData("hour", TimeHour).UsingJobData("minute", TimeMinute).Build(), TimeHour, TimeMinute);
-            await ScheduleManager.AddRingCornJob(JobBuilder.Create<ClassBeginRingJob>().Build(), overTime.Hour, overTime.Minute);
+            await ScheduleManager.AddRingCornJob(JobBuilder.Create<ClassOverRingJob>().Build(), overTime.Hour, overTime.Minute);
         }
     }
 }

@@ -2,19 +2,25 @@ from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Depends
-from sqlalchemy import and_
+from sqlalchemy import and_, null
 from starlette import status
 
 import services
 from app import schemas, models
+from app.packets import Packets
 from app.schemas import ScheduleBase
+from app.session import send_packet, online_clients
 from app.users import current_privilege_user
 from services import db_session
 
 schedule_router = APIRouter(prefix='/schedule', tags=['schedule'], dependencies=[Depends(current_privilege_user)])
 
 
-def get_weekday():
+def _notify_client(client_id: int):
+    send_packet(Packets.REFRESH_SCHEDULE, '', client_id)
+
+
+def _get_weekday():
     weekday = datetime.now().isoweekday()
     weekday = 0 if weekday == 7 else weekday
     return weekday
@@ -95,7 +101,7 @@ async def delete_schedule_class(class_id: int):
 
 @schedule_router.post('/apply', response_model=schemas.Client)
 async def apply_schedule(schedule_id: int, client_id: int):
-    weekday = get_weekday()
+    weekday = _get_weekday()
     async with db_session() as session:
         schedule = await services.get_model(session, schedule_id, models.Schedule)
         client = await services.get_model(session, client_id, models.Client)
@@ -107,4 +113,13 @@ async def apply_schedule(schedule_id: int, client_id: int):
                                      client_id=client.id, time_duration=clazz.time_duration)
             session.add(new_clazz)
         await session.refresh(client)
+        _notify_client(client_id)
         return client
+
+
+async def update_subscription():
+    async with services.db_session() as session:
+        clients = await services.select_models(session, models.Client, models.Client.subscribe_schedule_id != null(), )
+        for client in clients:
+            client_id = client.id
+            await apply_schedule(client.subscribe_schedule_id, client_id)

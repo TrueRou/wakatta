@@ -45,19 +45,18 @@
                     <el-descriptions class="w-1/2" direction="horizontal" :column="1">
                         <el-descriptions-item label="名称">{{ clientData.identifier }}</el-descriptions-item>
                         <el-descriptions-item label="ID">{{ clientData.id }}</el-descriptions-item>
-                        <el-descriptions-item
-                            label="Hardware ID">f6d9b713-31a0-41bb-9360-927e11a81786</el-descriptions-item>
+                        <el-descriptions-item label="Hardware ID">{{ clientData.hardware_id }}</el-descriptions-item>
                         <el-descriptions-item label="客户端版本">
-                            Beta 1.0
+                            {{ clientData.version }}
                         </el-descriptions-item>
-                        <el-descriptions-item label="会议号">
-                            123456789
+                        <el-descriptions-item label="上课铃声">
+                            {{ clientData.class_begin_ringtone_filename }}
                         </el-descriptions-item>
-                        <el-descriptions-item label="参会人数">
-                            123
+                        <el-descriptions-item label="下课铃声">
+                            {{ clientData.class_over_ringtone_filename }}
                         </el-descriptions-item>
                         <el-descriptions-item label="订阅日程表">
-                            Schedule (123456789)
+                            {{ clientData.subscribe_schedule_id == null ? "未订阅" : clientData.subscribe_schedule_id }}
                         </el-descriptions-item>
                     </el-descriptions>
                 </el-tab-pane>
@@ -67,13 +66,12 @@
                         <el-button type="danger" class="ml-2">全部删除</el-button>
                     </div>
                     <el-table class="w-full" :border="true" :data="clientData.classes">
-                        <el-table-column prop="id" label="ID" width="80" />
+                        <el-table-column type="index" label="序号" width="80" />
                         <el-table-column prop="label" label="课程" width="100" />
                         <el-table-column prop="name" label="时间" />
                         <el-table-column label="操作" width="240">
                             <template #default="scope">
                                 <el-button type="primary" @click="editClass(scope.row)">编辑</el-button>
-                                <el-button type="info" @click="editClass(scope.row)">复制</el-button>
                                 <el-button type="danger" @click="removeClass(scope.row.id)">删除</el-button>
                             </template>
                         </el-table-column>
@@ -173,6 +171,7 @@ const refreshClient = async () =>
     let params = router.currentRoute.value.params
     const response = await axios.get(config.API_CLIENT + `?client_id=${params.id}`, userStore.getAuthorizedHeader())
     clientData.value = response.data
+    console.log(clientData.value)
 }
 
 const editClass = (clazz) =>
