@@ -36,5 +36,5 @@ export const useDataStore = defineStore('data', () =>
         }
     }
 
-    return { clients, schedules, online_users, fetchData, refreshSchedules }
+    return { clients, schedules, online_users, dashboard_statistics, fetchData, refreshSchedules }
 })

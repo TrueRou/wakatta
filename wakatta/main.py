@@ -53,7 +53,7 @@ async def get_statistics():
                 'schedule_count': await services.select_models_count(the_session, models.Schedule, None),
                 'class_count': await services.select_models_count(the_session, models.Class, None),
                 'schedule_class_count': await services.select_models_count(the_session, models.ScheduleClass, None),
-                'user_count': await services.select_models_count(the_session, models.ScheduleClass, None),
+                'user_count': await services.select_models_count(the_session, models.User, None),
                 'online_users_count': len(session.online_clients),
             }
         }
