@@ -56,6 +56,7 @@ class ClientBase(ModelBase):
     identifier: str
     version: str
     hardware_id: str
+    vits_id: int
     class_begin_ringtone_filename: str
     class_over_ringtone_filename: str
     subscribe_schedule_id: Optional[int]

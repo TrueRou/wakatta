@@ -1,0 +1,3 @@
+[submodule "vits-simple-api"]
+	path = vits-simple-api
+	url = https://github.com/Artrajz/vits-simple-api.git

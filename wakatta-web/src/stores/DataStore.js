@@ -12,6 +12,8 @@ export const useDataStore = defineStore('data', () =>
     const schedules = ref([])
     const online_users = ref([])
     const dashboard_statistics = ref([])
+    const vits_enabled = ref(false)
+    const vits_characters = ref(null)
 
 
     async function fetchData()
@@ -24,6 +26,14 @@ export const useDataStore = defineStore('data', () =>
             schedules.value = statistics.schedules
             online_users.value = statistics.online_users
             dashboard_statistics.value = statistics.dashboard_statistics
+
+            if (vits_characters.value == null)
+            {
+                const vits = await (await axios.get(config.API_VITS_CHARACTERS)).data
+                vits_enabled.value = vits.enabled
+                vits_characters.value = vits.characters
+                console.log(vits.characters)
+            }
         }
     }
 
@@ -36,5 +46,5 @@ export const useDataStore = defineStore('data', () =>
         }
     }
 
-    return { clients, schedules, online_users, dashboard_statistics, fetchData, refreshSchedules }
+    return { clients, schedules, online_users, dashboard_statistics, fetchData, refreshSchedules, vits_enabled, vits_characters }
 })

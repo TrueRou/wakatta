@@ -118,6 +118,12 @@
                                     <el-option v-for="value in config.AVAILABLE_RINGTONES" :value="value"></el-option>
                                 </el-select>
                             </el-form-item>
+                            <el-form-item label="VITS语音模型" prop="vits">
+                                <el-select class="w-full" v-model="clientData.vits_id">
+                                    <el-option v-for="vits in dataStore.vits_characters" :value="vits.id"
+                                        :label="vits.name"></el-option>
+                                </el-select>
+                            </el-form-item>
                         </el-form>
                     </div>
                 </el-tab-pane>

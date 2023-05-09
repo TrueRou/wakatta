@@ -30,6 +30,7 @@ class Client(Base):
     class_over_ringtone_filename = Column(String(length=32), nullable=False, default='default_class_over.wav')
     version = Column(String(length=32), nullable=False)
     subscribe_schedule_id = Column(Integer, ForeignKey('schedule.id'))
+    vits_id = Column(Integer, default=133)
     classes = relationship('Class', backref=backref('client', lazy=False), lazy='selectin', uselist=True,
                            order_by=and_(Class.time_hour, Class.time_minute))
     subscribe_schedule = relationship('Schedule', backref=backref('client', lazy='dynamic'), lazy=False)

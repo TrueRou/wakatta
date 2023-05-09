@@ -7,7 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 import services
 from app.models import User
 from services import db_session
-from app import clients, schedules, session, models, schemas
+from app import clients, schedules, session, models, schemas, vits
 from app.schemas import UserRead, UserUpdate, UserCreate
 from app.users import fastapi_users, auth_backend, current_superuser, current_privilege_user
 
@@ -16,6 +16,7 @@ scheduler = AsyncIOScheduler()
 
 app.include_router(clients.client_router)
 app.include_router(schedules.schedule_router)
+app.include_router(vits.vits_router)
 app.include_router(fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"])
 app.include_router(fastapi_users.get_users_router(UserRead, UserUpdate), prefix="/users", tags=["users"])
 app.include_router(fastapi_users.get_register_router(UserRead, UserCreate), prefix="/auth", tags=["auth"])
