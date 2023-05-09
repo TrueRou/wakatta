@@ -48,7 +48,11 @@
                         <el-table class="w-full" :border="true" :data="currentClasses">
                             <el-table-column type="index" label="序号" width="80" />
                             <el-table-column prop="label" label="课程" width="100" />
-                            <el-table-column prop="name" label="时间" />
+                            <el-table-column prop="name" label="时间">
+                                <template #default="scope">
+                                    {{ getClassTime(scope.row.time_hour, scope.row.time_minute, scope.row.time_duration) }}
+                                </template>
+                            </el-table-column>
                             <el-table-column label="操作" width="240">
                                 <template #default="scope">
                                     <el-button type="primary" @click="editClass(scope.row)">编辑</el-button>
@@ -197,6 +201,15 @@ const createClass = () =>
 {
     dialogClassCreating.value = true;
     dataClassCreating.value = { weekday: filterDay.value }
+}
+
+function getClassTime(hour, minute, duration)
+{
+    const endMinute = (minute + duration) % 60;
+    const endHour = hour + Math.floor((minute + duration) / 60);
+    const start = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    const end = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+    return `${start} - ${end}`;
 }
 
 const createClassSubmit = async () =>
