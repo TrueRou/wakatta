@@ -39,8 +39,8 @@
             </el-row>
         </div>
         <div class="m-5 w-full">
-            <el-tabs :model-value="currentTab">
-                <el-tab-pane name="profile" label="总览">
+            <el-tabs>
+                <el-tab-pane label="总览">
                     <el-descriptions class="w-1/2" direction="horizontal" :column="1">
                         <el-descriptions-item label="名称">{{ clientData.identifier }}</el-descriptions-item>
                         <el-descriptions-item label="ID">{{ clientData.id }}</el-descriptions-item>
@@ -208,7 +208,6 @@ const formClassCreating = ref()
 const formClassEditing = ref()
 const dialogSubscription = ref(false)
 const formSubscription = ref()
-const currentTab = ref("profile")
 
 const userStore = useUserStore()
 const dataStore = useDataStore()

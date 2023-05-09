@@ -70,6 +70,13 @@ async def get_schedule_classes(schedule_id: int, weekday: int):
         return result.all()
 
 
+@schedule_router.get('/subscriber', response_model=list[schemas.ClientBase])
+async def get_schedule_subscriber(schedule_id: int):
+    async with db_session() as session:
+        result = await services.select_models(session, models.Client, models.Client.subscribe_schedule_id == schedule_id)
+        return result.all()
+
+
 @schedule_router.post('/class', response_model=schemas.ScheduleClass)
 async def create_schedule_class(schedule_id: int, form: schemas.ScheduleClassBase):
     async with db_session() as session:

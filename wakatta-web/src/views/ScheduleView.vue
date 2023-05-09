@@ -62,10 +62,17 @@
                         </el-table>
                     </el-tab-pane>
                     <el-tab-pane label="订阅者">
-
-                    </el-tab-pane>
-                    <el-tab-pane label="设置">
-
+                        <el-table class="w-full" :border="true" :data="subscriber">
+                            <el-table-column type="index" label="序号" width="80" />
+                            <el-table-column prop="identifier" label="订阅者名称" />
+                            <el-table-column prop="hardware_id" label="硬件码" width="320" />
+                            <el-table-column label="操作" width="240">
+                                <template #default="scope">
+                                    <el-button type="primary" @click="jumpClient(scope.row.id)">跳转</el-button>
+                                    <el-button type="danger" @click="removeClient(scope.row.id)">取消订阅</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -137,6 +144,7 @@ import { useRouter } from 'vue-router'
 import config from '../config'
 import axios from 'axios';
 import { useUserStore } from '../stores/UserStore';
+import { ElNotification } from 'element-plus'
 
 const scheduleData = ref({})
 const weekdayList = [
@@ -170,6 +178,7 @@ const weekdayList = [
     },
 ]
 const filterDay = ref(new Date().getDay().toString())
+const subscriber = ref()
 
 const formRules = {
     label: [{ required: true, message: '请填写课程名称', trigger: 'blur' },],
@@ -195,6 +204,8 @@ const refreshSchedule = async () =>
     const response = await axios.get(config.API_SCHEDULE + `?schedule_id=${params.id}`, userStore.getAuthorizedHeader())
     scheduleData.value = response.data
     await refreshClasses()
+    const response2 = await axios.get(config.API_SCHEDULE_SUBSCRIBER + `?schedule_id=${params.id}`, userStore.getAuthorizedHeader())
+    subscriber.value = response2.data
 }
 
 const createClass = () =>
@@ -212,6 +223,22 @@ function getClassTime(hour, minute, duration)
     return `${start} - ${end}`;
 }
 
+const jumpClient = (id) =>
+{
+    router.push(`/client/${id}`)
+}
+
+const removeClient = async (id) =>
+{
+    await axios.delete(config.API_CLIENT_SUBSCRIPTION + `?client_id=${id}`, userStore.getAuthorizedHeader())
+    await refreshSchedule()
+    ElNotification({
+        title: '提示',
+        message: '取消成功',
+        type: 'success',
+    })
+}
+
 const createClassSubmit = async () =>
 {
     await formClassCreating.value.validate(async (valid) =>
@@ -221,6 +248,11 @@ const createClassSubmit = async () =>
             await axios.post(config.API_SCHEDULE_CLASS + `?schedule_id=${scheduleData.value.id}`, dataClassCreating.value, userStore.getAuthorizedHeader())
             dialogClassCreating.value = false;
             await refreshSchedule()
+            ElNotification({
+                title: '提示',
+                message: '创建成功, 这将应用到所有订阅者',
+                type: 'success',
+            })
         }
     })
 }
@@ -233,6 +265,11 @@ const editClassSubmit = async () =>
         {
             await axios.patch(config.API_SCHEDULE_CLASS + `?schedule_id=${scheduleData.value.id}`, dataClassEditing.value, userStore.getAuthorizedHeader())
             dialogClassEditing.value = false;
+            ElNotification({
+                title: '提示',
+                message: '修改成功, 这将应用到所有订阅者',
+                type: 'success',
+            })
         }
     })
 }
@@ -253,6 +290,11 @@ const removeClass = async (id) =>
 {
     await axios.delete(config.API_SCHEDULE_CLASS + `?class_id=${id}`, userStore.getAuthorizedHeader())
     await refreshSchedule()
+    ElNotification({
+        title: '提示',
+        message: '删除成功, 这将应用到所有订阅者',
+        type: 'success',
+    })
 }
 
 onMounted(async () => await refreshSchedule())
