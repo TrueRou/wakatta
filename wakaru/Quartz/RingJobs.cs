@@ -26,12 +26,9 @@ namespace wakaru.Quartz
     {
         public override Task Execute(IJobExecutionContext context)
         {
-            int hour = (int)context.MergedJobDataMap.Get("hour");
-            int minute = (int)context.MergedJobDataMap.Get("minute");
-            int duration = (int)context.MergedJobDataMap.Get("duration");
             if (WakattaClient.CurrentClient != null)
             {
-                //PlaySound(WakattaClient.CurrentClient.ClassBeginRingtone);
+                PlaySound(WakattaClient.CurrentClient.ClassBeginRingtone);
                 WakattaClient.ApplyStatus();
             } 
             return Task.CompletedTask;
@@ -44,7 +41,7 @@ namespace wakaru.Quartz
         {
             if (WakattaClient.CurrentClient != null)
             {
-                //PlaySound(WakattaClient.CurrentClient.ClassOverRingtone);
+                PlaySound(WakattaClient.CurrentClient.ClassOverRingtone);
                 StatusPanel.UpdateStatus(StatusPanel.Status.CLASS_OVER);
                 ProfilePanel.ClearTime();
                 WakattaSchedule.SetSelectedIndex(-1);
