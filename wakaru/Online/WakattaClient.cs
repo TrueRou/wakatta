@@ -28,6 +28,8 @@ namespace wakaru.Online
         public string ClassBeginRingtone { get; set; } = "default_class_begin.wav";
         [JsonProperty(PropertyName = "class_over_ringtone_filename")]
         public string ClassOverRingtone { get; set; } = "default_class_over.wav";
+        [JsonProperty(PropertyName = "vits_id")]
+        public int VITSId { get; set; } = 133;
         [JsonProperty(PropertyName = "classes")]
         public List<WakattaClass>? Classes { get; set; }
         [JsonProperty(PropertyName = "subscribe_schedule")]
@@ -47,6 +49,7 @@ namespace wakaru.Online
             await (CurrentClient?.RefreshClasses() ?? Task.CompletedTask);
             OnlinePanel.UpdateStatus();
             ApplyStatus();
+            await VITSManager.PrepareVITS();
         }
 
         public async Task RefreshClasses()

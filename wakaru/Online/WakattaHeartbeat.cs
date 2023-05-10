@@ -26,19 +26,24 @@ namespace wakaru.Online
         {
             switch (packet.PacketId)
             {
-                case (int) Packets.MESSAGE: break;
+                case (int) Packets.MESSAGE:
+                    await VITSManager.PlaySound(packet.Payload);
+                    break;
                 case (int)Packets.REFRESH_SCHEDULE:
                     await (WakattaClient.CurrentClient?.RefreshClasses() ?? Task.CompletedTask);
                     break;
                 case (int) Packets.RECONNECT: 
                     await WakattaClient.Create();
                     break;
+                case (int)Packets.REFRESH_VITS:
+                    await VITSManager.RefreshId();
+                    break;
             }
         }
 
         public static async Task ScheduleJob()
         {
-            if (Scheduled)
+            if (!Scheduled)
             {
                 await ScheduleManager.AddClientIntervalJob(JobBuilder.Create<WakattaHeartbeat>().Build(), HeartBeatInterval);
                 Scheduled = true;

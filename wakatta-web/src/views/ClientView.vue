@@ -119,7 +119,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="VITS语音模型" prop="vits">
-                                <el-select class="w-full" v-model="clientData.vits_id">
+                                <el-select filterable class="w-full" v-model="clientData.vits_id">
                                     <el-option v-for="vits in dataStore.vits_characters" :value="vits.id"
                                         :label="vits.name"></el-option>
                                 </el-select>
@@ -278,7 +278,8 @@ const editClientSubmit = async () =>
         "subscribe_schedule_id": clientData.value.subscribe_schedule_id,
         "identifier": clientDataCopy.value.identifier,
         "class_begin_ringtone_filename": clientDataCopy.value.class_begin_ringtone_filename,
-        "class_over_ringtone_filename": clientDataCopy.value.class_over_ringtone_filename
+        "class_over_ringtone_filename": clientDataCopy.value.class_over_ringtone_filename,
+        "vits_id": clientData.value.vits_id
     }
     await axios.patch(config.API_CLIENT + `?client_id=${clientData.value.id}`, data, userStore.getAuthorizedHeader())
     dialogSubscription.value = false;

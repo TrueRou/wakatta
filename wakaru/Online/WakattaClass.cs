@@ -23,7 +23,7 @@ namespace wakaru.Online
         public async Task ScheduleJobs()
         {
             var overTime = Utils.DelayDatetime(TimeHour, TimeMinute, TimeDuration);
-            await ScheduleManager.AddRingCornJob(JobBuilder.Create<ClassBeginRingJob>().Build(), TimeHour, TimeMinute);
+            await ScheduleManager.AddRingCornJob(JobBuilder.Create<ClassBeginRingJob>().UsingJobData("label", Label).Build(), TimeHour, TimeMinute);
             await ScheduleManager.AddRingCornJob(JobBuilder.Create<ClassOverRingJob>().Build(), overTime.Hour, overTime.Minute);
         }
     }

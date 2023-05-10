@@ -21,6 +21,12 @@ namespace wakaru.Quartz
             var filePath = Path.Combine(SoundFolder, fileName);
             new SoundPlayer(filePath).Play();
         }
+
+        public static void PlaySoundSync(string fileName)
+        {
+            var filePath = Path.Combine(SoundFolder, fileName);
+            new SoundPlayer(filePath).PlaySync();
+        }
     }
     public class ClassBeginRingJob : RingJob
     {
@@ -28,9 +34,13 @@ namespace wakaru.Quartz
         {
             if (WakattaClient.CurrentClient != null)
             {
-                PlaySound(WakattaClient.CurrentClient.ClassBeginRingtone);
+                var label = context.Get("label")?.ToString();
+                Task.Run(async () => {
+                    PlaySoundSync(WakattaClient.CurrentClient.ClassBeginRingtone);
+                    if (label != null) await VITSManager.PlaySoundFormat(label);
+                });
                 WakattaClient.ApplyStatus();
-            } 
+            }
             return Task.CompletedTask;
         }
     }

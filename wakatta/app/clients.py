@@ -60,9 +60,11 @@ async def get_client(client_id: int):
 async def patch_client(client_id: int, form: schemas.ClientUpdate):
     async with db_session() as session:
         client = await services.get_model(session, client_id, models.Client)
-        await services.partial_update(session, client, form)
         if form.subscribe_schedule_id != client.subscribe_schedule_id:
             await schedules.apply_schedule(client.subscribe_schedule_id, client_id)
+        if form.vits_id != client.vits_id:
+            send_packet(Packets.REFRESH_VITS, "",  client_id)
+        await services.partial_update(session, client, form)
         _notify_client(client_id)
         return client
 
