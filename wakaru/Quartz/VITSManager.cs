@@ -24,14 +24,6 @@ namespace wakaru.Quartz
             vitsObject = obj ?? vitsObject;
         }
 
-        public static async Task RefreshId()
-        {
-            if (WakattaClient.CurrentClient == null) return;
-            using var client = WakattaClient.CreateWebClient();
-            var obj = await client.GetJsonAsync<VITSCharacter>("vits/id", new { client_id = WakattaClient.CurrentClient.Id });
-            if (obj != null) WakattaClient.CurrentClient.VITSId = obj.CharacterId;
-        }
-
         public static async Task PlaySound(string content)
         {
             if (!vitsObject.Enabled) return;
@@ -67,13 +59,5 @@ namespace wakaru.Quartz
         public bool Enabled { get; set; }
         [JsonProperty(PropertyName = "entrypoint")]
         public string Entrypoint { get; set; } = string.Empty;
-    }
-
-    public class VITSCharacter
-    {
-        [JsonProperty(PropertyName = "enabled")]
-        public bool Enabled { get; set; }
-        [JsonProperty(PropertyName = "id")]
-        public int CharacterId { get; set; }
     }
 }

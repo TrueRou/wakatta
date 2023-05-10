@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading.Tasks;
 using wakaru.Online;
+using wakaru.Quartz;
 
 namespace wakaru
 {
@@ -50,6 +53,20 @@ namespace wakaru
             Configuration.Instance.HardwareID = hardwareID;
             Configuration.Save();
             return hardwareID;
+        }
+
+        public static void PlayBeginRingtoneDirectly()
+        {
+            if (WakattaClient.CurrentClient == null) return;
+            var filePath = Path.Combine(RingJob.SoundFolder, WakattaClient.CurrentClient.ClassBeginRingtone);
+            new SoundPlayer(filePath).Play();
+        }
+
+        public static void PlayOverRingtoneDirectly()
+        {
+            if (WakattaClient.CurrentClient == null) return;
+            var filePath = Path.Combine(RingJob.SoundFolder, WakattaClient.CurrentClient.ClassOverRingtone);
+            new SoundPlayer(filePath).Play();
         }
     }
 }

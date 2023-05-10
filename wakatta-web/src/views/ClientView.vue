@@ -30,9 +30,17 @@
                 <el-col :span="6" :offset="6">
                     <el-descriptions direction="horizontal" title="客户端操作" />
                     <div class="flex flex-col">
-                        <div class="flex">
-                            <el-button class="flex" type="primary">刷新</el-button>
-                            <el-button class="flex" type="danger">删除</el-button>
+                        <div>
+                            <el-button type="primary">刷新</el-button>
+                            <el-button type="danger">删除</el-button>
+                            <br>
+                            <div class="mt-2">
+                                <el-button @click="sendRing(true)">播放上课铃</el-button>
+                                <el-button @click="sendRing(false)">播放下课铃</el-button>
+                            </div>
+                            <div class="mt-2">
+                                <el-button type="primary" @click="dialogAlert = true">语音提醒</el-button>
+                            </div>
                         </div>
                     </div>
                 </el-col>
@@ -98,7 +106,6 @@
                         <el-table-column prop="name" label="时间" />
                     </el-table>
                 </el-tab-pane>
-                <el-tab-pane label="提醒"></el-tab-pane>
                 <el-tab-pane label="设置">
                     <div class=" mr-10">
                         <div class="flex mb-3">
@@ -119,7 +126,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="VITS语音模型" prop="vits">
-                                <el-select filterable class="w-full" v-model="clientData.vits_id">
+                                <el-select class="w-full" v-model="clientData.vits_id">
                                     <el-option v-for="vits in dataStore.vits_characters" :value="vits.id"
                                         :label="vits.name"></el-option>
                                 </el-select>
@@ -193,6 +200,12 @@
             </span>
         </template>
     </el-dialog>
+    <el-dialog title="语音提醒" v-model="dialogAlert" width="500">
+        <div class=" text-right">
+            <el-input v-model="alertText"></el-input>
+            <el-button class="mt-5" type="primary" @click="sendAlert">发送</el-button>
+        </div>
+    </el-dialog>
 </template>
 
 <script setup>
@@ -214,6 +227,8 @@ const formClassCreating = ref()
 const formClassEditing = ref()
 const dialogSubscription = ref(false)
 const formSubscription = ref()
+const dialogAlert = ref(false)
+const alertText = ref()
 
 const userStore = useUserStore()
 const dataStore = useDataStore()
@@ -246,6 +261,17 @@ const editClass = (clazz) =>
 const editSubscription = () =>
 {
     dialogSubscription.value = true
+}
+
+const sendAlert = async () =>
+{
+    await axios.post(config.API_CLIENT_MESSAGE + `?client_id=${clientData.value.id}&message=${alertText.value}`, {}, userStore.getAuthorizedHeader())
+    dialogAlert.value = false
+}
+
+const sendRing = async (begin) =>
+{
+    await axios.post(config.API_CLIENT_RING + `?client_id=${clientData.value.id}&begin=${begin}`, {}, userStore.getAuthorizedHeader())
 }
 
 const createClass = () =>

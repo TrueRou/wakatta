@@ -20,6 +20,10 @@ def _notify_client(client_id: int):
     send_packet(Packets.REFRESH_SCHEDULE, '', client_id)
 
 
+def _notify_client_hard(client_id: int):
+    send_packet(Packets.RECONNECT, '', client_id)
+
+
 @client_router.get('/create', response_model=schemas.Client)
 async def create_client(hardware_id: str, version: str):
     async with db_session() as session:
@@ -62,10 +66,8 @@ async def patch_client(client_id: int, form: schemas.ClientUpdate):
         client = await services.get_model(session, client_id, models.Client)
         if form.subscribe_schedule_id != client.subscribe_schedule_id:
             await schedules.apply_schedule(client.subscribe_schedule_id, client_id)
-        if form.vits_id != client.vits_id:
-            send_packet(Packets.REFRESH_VITS, "",  client_id)
         await services.partial_update(session, client, form)
-        _notify_client(client_id)
+        _notify_client_hard(client_id)
         return client
 
 
@@ -122,3 +124,9 @@ async def delete_class(class_id: int):
 @client_router.post('/message', status_code=status.HTTP_200_OK, dependencies=[Depends(current_privilege_user)])
 async def create_message(message: str, client_id: int = -1):
     send_packet(Packets.MESSAGE, message, client_id) if client_id != -1 else send_packets(Packets.MESSAGE, message)
+
+
+@client_router.post('/ring', status_code=status.HTTP_200_OK, dependencies=[Depends(current_privilege_user)])
+async def ring_client(begin: bool, client_id: int = -1):
+    packet = Packets.RING_CLASS_BEGIN if begin else Packets.RING_CLASS_OVER
+    send_packet(packet, "", client_id) if client_id != -1 else send_packets(packet, "")

@@ -35,8 +35,11 @@ namespace wakaru.Online
                 case (int) Packets.RECONNECT: 
                     await WakattaClient.Create();
                     break;
-                case (int)Packets.REFRESH_VITS:
-                    await VITSManager.RefreshId();
+                case (int)Packets.RING_CLASS_BEGIN:
+                    Utils.PlayBeginRingtoneDirectly();
+                    break;
+                case (int)Packets.RING_CLASS_OVER:
+                    Utils.PlayOverRingtoneDirectly();
                     break;
             }
         }

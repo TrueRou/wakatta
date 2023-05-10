@@ -10,9 +10,12 @@ vits_router = APIRouter(prefix='/vits', tags=['vits'])
 vits_characters = []
 
 if config.vits_enabled:
-    request = requests.get(config.vits_entrypoint + "voice/speakers")
-    request.encoding = 'utf-8'
-    vits_characters = request.json()['VITS']
+    try:
+        request = requests.get(config.vits_entrypoint + "voice/speakers")
+        request.encoding = 'utf-8'
+        vits_characters = request.json()['VITS']
+    except requests.exceptions.ConnectionError:
+        config.vits_enabled = False
 
 
 @vits_router.get('/characters')
@@ -29,13 +32,3 @@ async def get_entrypoint():
         'enabled': config.vits_enabled,
         'entrypoint': config.vits_entrypoint
     }
-
-
-@vits_router.get('/id')
-async def get_character_id(client_id: int):
-    async with db_session() as session:
-        client = await services.get_model(session, client_id, models.Client)
-        return {
-            'enabled': config.vits_enabled,
-            'id': client.vits_id
-        }

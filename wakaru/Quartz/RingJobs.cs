@@ -14,7 +14,7 @@ namespace wakaru.Quartz
 {
     public abstract class RingJob : IJob
     {
-        private static readonly string SoundFolder = Path.Combine(Directory.GetCurrentDirectory(), "ringtones");
+        public static readonly string SoundFolder = Path.Combine(Directory.GetCurrentDirectory(), "ringtones");
         public abstract Task Execute(IJobExecutionContext context);
         public static void PlaySound(string fileName)
         {
