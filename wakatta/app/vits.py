@@ -2,9 +2,6 @@ import requests
 from fastapi import APIRouter
 
 import config
-import services
-from app import models
-from services import db_session
 
 vits_router = APIRouter(prefix='/vits', tags=['vits'])
 vits_characters = []

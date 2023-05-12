@@ -17,7 +17,7 @@
                 <StackPanel Orientation="Horizontal">
                     <ToggleButton Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />
                     <TextBlock FontSize="18" VerticalAlignment="Center" Margin="16 0 0 0">
-                    Wakaru v20230514 - 在线会议打铃管理系统
+                    Wakaru v20230510 - 在线会议打铃管理系统
                     </TextBlock>
                 </StackPanel>
                 <Button HorizontalAlignment="Right" Foreground="White" Style="{StaticResource MaterialDesignFlatButton}" Click="Button_Click">
