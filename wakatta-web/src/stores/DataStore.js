@@ -32,7 +32,6 @@ export const useDataStore = defineStore('data', () =>
                 const vits = await (await axios.get(config.API_VITS_CHARACTERS)).data
                 vits_enabled.value = vits.enabled
                 vits_characters.value = vits.characters
-                console.log(vits.characters)
             }
         }
     }

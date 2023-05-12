@@ -48,7 +48,7 @@ class ScheduleBase(ModelBase):
 
 class Schedule(ScheduleBase):
     id: int
-    classes: list[ScheduleClass]
+    classes: List[ScheduleClass]
 
 
 class ClientBase(ModelBase):
@@ -64,7 +64,7 @@ class ClientBase(ModelBase):
 
 class Client(ClientBase):
     subscribe_schedule: Optional[Schedule]
-    classes: list[Class]
+    classes: List[Class]
 
 
 class ClientUpdate(ClientBase):
@@ -72,9 +72,9 @@ class ClientUpdate(ClientBase):
 
 
 class Statistics(ModelBase):
-    online_users: list[int]
-    clients: list[Client]
-    schedules: list[Schedule]
+    online_users: List[int]
+    clients: List[Client]
+    schedules: List[Schedule]
     dashboard_statistics: dict
 
 
