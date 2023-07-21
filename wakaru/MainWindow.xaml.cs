@@ -34,6 +34,7 @@ namespace wakaru
                 await ScheduleManager.CreateScheduler();
                 await WakattaClient.Create();
             });
+            UpdateProgressBar();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -44,6 +45,12 @@ namespace wakaru
         private void ColorZone_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Instance.DragMove();
+        }
+
+        public static void UpdateProgressBar()
+        {
+            var color = Configuration.Instance.UseLocal ? Colors.IndianRed : Colors.MediumPurple;
+            Instance.ProgressBarMain.Background = new SolidColorBrush(color);
         }
     }
 }

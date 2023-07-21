@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using wakaru.Online;
+using wakaru.Quartz;
 
 namespace wakaru.Views
 {
@@ -54,6 +55,16 @@ namespace wakaru.Views
                     Instance.Icon.Kind = MaterialDesignThemes.Wpf.PackIconKind.ShoeSneaker;
                 }
             }));
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Configuration.Instance.UseLocal = !Configuration.Instance.UseLocal;
+            Configuration.Save();
+            Task.Run(async () => {
+                await WakattaClient.Create();
+            });
+            MainWindow.UpdateProgressBar();
         }
     }
 }

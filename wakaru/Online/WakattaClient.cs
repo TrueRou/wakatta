@@ -37,7 +37,8 @@ namespace wakaru.Online
 
         public static RestClient CreateWebClient() 
         {
-            return new RestClient(Configuration.Instance.APIUrl, configureSerialization: s => s.UseNewtonsoftJson());
+            var apiUrl = Configuration.Instance.UseLocal ? Configuration.Instance.LocalAPIUrl : Configuration.Instance.OnlineAPIUrl;
+            return new RestClient(apiUrl, configureSerialization: s => s.UseNewtonsoftJson());
         }
 
         public static async Task Create()

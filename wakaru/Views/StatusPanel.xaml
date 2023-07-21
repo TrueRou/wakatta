@@ -8,7 +8,9 @@
              d:DesignHeight="220" d:DesignWidth="216" Background="White">
     <Grid>
         <StackPanel Margin="40">
-            <materialDesign:PackIcon Name="Icon" Height="100" Width="100" HorizontalAlignment="Center" Kind="PowerSleep"></materialDesign:PackIcon>
+            <Button Height="100" HorizontalAlignment="Center" Width="100" Style="{StaticResource MaterialDesignIconButton}" Click="Button_Click">
+                <materialDesign:PackIcon Name="Icon" Height="100" Width="100"  Kind="PowerSleep"></materialDesign:PackIcon>
+            </Button>
             <TextBlock Name="Label" FontSize="20" HorizontalAlignment="Center">闲置</TextBlock>
         </StackPanel>
     </Grid>
