@@ -103,7 +103,11 @@
                                 {{ getChineseWeekday(scope.row.weekday) }}
                             </template>
                         </el-table-column>
-                        <el-table-column prop="name" label="时间" />
+                        <el-table-column prop="name" label="时间">
+                            <template #default="scope">
+                                {{ getClassTime(scope.row.time_hour, scope.row.time_minute, scope.row.time_duration) }}
+                            </template>
+                        </el-table-column>
                     </el-table>
                 </el-tab-pane>
                 <el-tab-pane label="设置">
